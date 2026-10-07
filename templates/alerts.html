@@ -1,0 +1,2310 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>NIDS - Alerts</title>
+
+
+    <style>
+
+        /* =================================
+           RESET
+        ================================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        /* =================================
+           VARIABLES
+        ================================= */
+
+        :root {
+            --bg: #F7F9FC;
+            --white: #FFFFFF;
+
+            --blue: #2563EB;
+            --blue-light: #E8F0FE;
+
+            --text: #172033;
+            --muted: #64748B;
+
+            --border: #E6EBF2;
+
+            --green: #16A34A;
+            --green-light: #ECFDF3;
+
+            --red: #DC2626;
+            --red-light: #FDECEC;
+
+            --orange: #D97706;
+            --orange-light: #FFF7ED;
+        }
+
+
+        /* =================================
+           BODY
+        ================================= */
+
+        body {
+            font-family: "Inter", Arial, sans-serif;
+
+            background: var(--bg);
+
+            color: var(--text);
+
+            min-height: 100vh;
+
+            overflow-x: hidden;
+        }
+
+
+        /* =================================
+           APP
+        ================================= */
+
+        .app {
+            display: flex;
+
+            min-height: 100vh;
+        }
+
+
+        /* =================================
+           SIDEBAR
+        ================================= */
+
+        .sidebar {
+            width: 200px;
+
+            background: var(--white);
+
+            border-right: 1px solid var(--border);
+
+            position: fixed;
+
+            left: 0;
+            top: 0;
+            bottom: 0;
+
+            z-index: 100;
+
+            display: flex;
+
+            flex-direction: column;
+        }
+
+
+        /* =================================
+           PROFILE
+        ================================= */
+
+        .profile-section {
+            display: block;
+            padding: 18px 16px;
+            border-bottom: 1px solid var(--border);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .profile-section:hover {
+            background: #F8FAFC;
+        }
+
+        .profile-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--blue-light);
+            color: var(--blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .profile-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .profile-username {
+            margin-top: 3px;
+            font-size: 12px;
+            color: var(--muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* =================================
+           LOGOUT
+        ================================= */
+
+        .logout-button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .logout-button:hover {
+            background: #FEF2F2;
+            color: var(--red);
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            padding: 12px 10px 18px;
+        }
+
+        .version {
+            text-align: center;
+            margin-top: 10px;
+            color: #94A3B8;
+            font-size: 10px;
+        }
+
+
+        /* =================================
+           LOGO
+        ================================= */
+
+        .logo {
+            height: 64px;
+
+            display: flex;
+
+            align-items: center;
+
+            padding: 0 22px;
+
+            border-bottom: 1px solid var(--border);
+
+            font-size: 18px;
+
+            font-weight: 700;
+        }
+
+
+        .logo span {
+            color: var(--black);
+        }
+
+
+        /* =================================
+           NAVIGATION
+        ================================= */
+
+        .nav {
+            padding: 16px 10px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 6px;
+
+            flex: 1;
+        }
+
+
+        .nav a {
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            padding: 12px 14px;
+
+            border-radius: 8px;
+
+            text-decoration: none;
+
+            color: var(--muted);
+
+            font-size: 14px;
+
+            font-weight: 500;
+
+            transition:
+                background 0.2s ease,
+                color 0.2s ease;
+        }
+
+
+        .nav a:hover {
+            background: #F1F5F9;
+
+            color: var(--blue);
+        }
+
+
+        .nav a.active {
+            background: var(--blue-light);
+
+            color: var(--blue);
+
+            font-weight: 600;
+        }
+
+
+        /* =================================
+           MAIN
+        ================================= */
+
+        .main {
+            margin-left: 200px;
+
+            width: calc(100% - 200px);
+
+            min-height: 100vh;
+        }
+
+
+        /* =================================
+           TOPBAR
+        ================================= */
+
+        .topbar {
+            height: 64px;
+
+            border-bottom: 1px solid var(--border);
+
+            display: flex;
+
+            align-items: center;
+
+            padding: 0 28px;
+
+            background: rgba(255, 255, 255, 0.96);
+
+            justify-content: space-between;
+        }
+
+
+        .topbar-title {
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            font-size: 18px;
+
+            font-weight: 600;
+
+            color: var(--text);
+
+            white-space: nowrap;
+        }
+        .top-right {
+            display: flex;
+
+            align-items: center;
+
+            margin-left: auto;
+        }
+
+
+        .topbar-status {
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            padding: 7px 12px;
+
+            font-size: 13px;
+
+            font-weight: 500;
+
+            color: #475569;
+
+            background: #F8FAFC;
+
+            border: 1px solid var(--border);
+
+            border-radius: 20px;
+
+            white-space: nowrap;
+        }
+
+
+        .live-dot {
+            width: 7px;
+
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: #22C55E;
+        }
+
+
+        /* =================================
+           CONTENT
+        ================================= */
+
+        .content {
+            padding: 28px 32px 40px;
+
+            max-width: 1600px;
+
+            margin: auto;
+        }
+
+
+        /* =================================
+           PAGE HEADER
+        ================================= */
+
+        .page-header {
+            margin-bottom: 20px;
+        }
+
+
+        .page-header h1 {
+            font-size: 26px;
+
+            font-weight: 700;
+
+            color: var(--text);
+
+            margin-bottom: 6px;
+        }
+
+
+        .page-header p {
+            color: var(--muted);
+
+            font-size: 14px;
+        }
+
+
+        /* =================================
+           PANEL
+        ================================= */
+
+        .panel {
+            background: var(--white);
+
+            border: 1px solid #E7ECF3;
+
+            border-radius: 12px;
+
+            overflow: hidden;
+
+            margin-bottom: 20px;
+
+            box-shadow:
+                0 3px 12px rgba(15, 23, 42, 0.035);
+        }
+
+
+        .panel-header {
+            padding: 16px 20px;
+
+            border-bottom: 1px solid var(--border);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+        }
+
+
+        .panel-title {
+            font-size: 15px;
+
+            font-weight: 600;
+
+            color: var(--text);
+        }
+
+
+        .panel-subtitle {
+            color: var(--muted);
+
+            font-size: 11px;
+        }
+
+
+        .panel-body {
+            padding: 0;
+        }
+
+
+        /* =================================
+           TABLE WRAPPER
+        ================================= */
+
+        .table-wrapper {
+            width: 100%;
+
+            overflow-x: auto;
+        }
+
+
+        /* =================================
+           ALERT TABLE
+        ================================= */
+
+        .alerts-table {
+            width: 100%;
+
+            min-width: 1050px;
+
+            border-collapse: collapse;
+        }
+
+
+        .alerts-table th {
+            color: var(--muted);
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            text-align: left;
+
+            padding: 13px 14px;
+
+            border-bottom: 1px solid var(--border);
+
+            background: #F8FAFC;
+
+            white-space: nowrap;
+        }
+
+
+        .alerts-table td {
+            color: #334155;
+
+            font-size: 12px;
+
+            font-weight: 500;
+
+            padding: 13px 14px;
+
+            border-bottom: 1px solid #EEF2F7;
+
+            white-space: nowrap;
+        }
+
+
+        .alerts-table tbody tr:hover {
+            background: #F8FAFC;
+        }
+
+
+        /* =================================
+           SEVERITY
+        ================================= */
+
+        .high {
+            color: var(--red);
+
+            font-weight: 700;
+        }
+
+
+        .medium {
+            color: var(--orange);
+
+            font-weight: 700;
+        }
+
+
+        .low {
+            color: var(--green);
+
+            font-weight: 700;
+        }
+
+
+        /* =================================
+           STATUS
+        ================================= */
+
+        .status {
+            padding: 5px 9px;
+
+            border-radius: 20px;
+
+            font-size: 10px;
+
+            font-weight: 600;
+
+            display: inline-block;
+        }
+
+
+        .status-unresolved {
+            color: var(--red);
+
+            background: var(--red-light);
+        }
+
+
+        .status-resolved {
+            color: var(--green);
+
+            background: var(--green-light);
+        }
+
+
+        /* =================================
+           BUTTON
+        ================================= */
+
+        .view-btn {
+            padding: 6px 11px;
+
+            border: 1px solid #D7E1F0;
+
+            border-radius: 7px;
+
+            cursor: pointer;
+
+            background: #F8FAFC;
+
+            color: var(--blue);
+
+            font-size: 11px;
+
+            font-weight: 600;
+
+            transition:
+                background 0.2s ease,
+                border-color 0.2s ease;
+        }
+
+
+        .view-btn:hover {
+            background: var(--blue-light);
+
+            border-color: #C8D8F5;
+        }
+
+
+        /* =================================
+           LOADING
+        ================================= */
+
+        #loading {
+            text-align: center;
+
+            padding: 40px;
+
+            color: var(--muted);
+
+            font-size: 13px;
+        }
+
+
+        /* =================================
+           EMPTY
+        ================================= */
+
+        .empty {
+            text-align: center;
+
+            padding: 40px;
+
+            color: var(--muted);
+
+            font-size: 13px;
+        }
+
+
+        /* =================================
+           ERROR
+        ================================= */
+
+        #error {
+            color: var(--red);
+
+            background: var(--red-light);
+
+            border: 1px solid #FECACA;
+
+            border-radius: 8px;
+
+            padding: 12px 14px;
+
+            margin: 16px;
+
+            font-size: 12px;
+        }
+
+
+        /* =================================
+           SHAP SECTION
+        ================================= */
+
+        #explanationSection {
+            display: none;
+        }
+
+
+        .explanation-description {
+            color: var(--muted);
+
+            font-size: 13px;
+
+            line-height: 1.6;
+
+            margin-bottom: 20px;
+        }
+
+
+        .shap-container {
+            padding: 20px;
+        }
+
+
+        .shap-row {
+            margin-bottom: 18px;
+        }
+
+
+        .shap-row:last-child {
+            margin-bottom: 0;
+        }
+
+
+        .feature-header {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 6px;
+        }
+
+
+        .feature-name {
+            color: var(--text);
+
+            font-size: 13px;
+
+            font-weight: 600;
+        }
+
+
+        .shap-value {
+            color: var(--muted);
+
+            font-size: 11px;
+        }
+
+
+        .value {
+            font-size: 11px;
+
+            color: var(--muted);
+
+            margin-bottom: 7px;
+        }
+
+
+        .bar-container {
+            width: 100%;
+
+            height: 8px;
+
+            background: #EEF2F7;
+
+            border-radius: 10px;
+
+            overflow: hidden;
+        }
+
+
+        .bar {
+            height: 100%;
+
+            border-radius: 10px;
+
+            transition: width 0.4s ease;
+        }
+
+
+        .attack-bar {
+            background: var(--red);
+        }
+
+
+        .normal-bar {
+            background: var(--green);
+        }
+
+
+        /* =================================
+           RESPONSIVE
+        ================================= */
+
+        @media (max-width: 900px) {
+
+            .sidebar {
+                width: 180px;
+            }
+
+
+            .main {
+                margin-left: 180px;
+
+                width: calc(100% - 180px);
+            }
+
+
+            .content {
+                padding: 24px 20px 30px;
+            }
+
+        }
+
+
+        @media (max-width: 700px) {
+
+            .sidebar {
+                position: relative;
+
+                width: 100%;
+
+                height: auto;
+
+                border-right: none;
+
+                border-bottom: 1px solid var(--border);
+            }
+
+
+            .nav {
+                flex-direction: row;
+
+                flex-wrap: wrap;
+            }
+
+
+            .main {
+                margin-left: 0;
+
+                width: 100%;
+            }
+
+
+            .topbar {
+                padding: 0 18px;
+            }
+
+
+            .topbar-title {
+                font-size: 16px;
+            }
+
+
+            .content {
+                padding: 20px 16px 30px;
+            }
+
+        }
+        /* =========================================================
+   ALERTS PAGE ANIMATIONS
+   ========================================================= */
+
+/* PAGE LOAD */
+body {
+    animation: pageFadeIn 0.45s ease-out both;
+}
+
+@keyframes pageFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+
+/* SIDEBAR */
+.sidebar {
+    animation: sidebarIn 0.45s ease-out both;
+}
+
+@keyframes sidebarIn {
+    from {
+        opacity: 0;
+        transform: translateX(-18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+
+/* PROFILE */
+.profile-section {
+    transition:
+        background 0.25s ease,
+        transform 0.25s ease;
+}
+
+.profile-section:hover {
+    background: #F8FAFC;
+    transform: translateX(2px);
+}
+
+.profile-avatar {
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.profile-section:hover .profile-avatar {
+    transform: scale(1.06);
+    box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.08);
+}
+
+
+/* NAVIGATION */
+.nav a {
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease,
+        padding-left 0.2s ease;
+}
+
+.nav a:hover {
+    transform: translateX(4px);
+    padding-left: 16px;
+}
+
+.nav a.active {
+    box-shadow: inset 3px 0 0 var(--blue);
+}
+
+
+/* TOPBAR */
+.topbar {
+    animation: topbarIn 0.5s ease-out both;
+}
+
+@keyframes topbarIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* LIVE MONITORING DOT */
+.live-dot,
+.status-dot {
+    animation: livePulse 1.8s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.35);
+    }
+
+    70% {
+        box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+    }
+}
+
+.topbar-status {
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.topbar-status:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+
+/* MAIN CONTENT */
+.content {
+    animation: contentIn 0.55s ease-out both;
+}
+
+@keyframes contentIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* PAGE HEADER */
+.page-header {
+    animation: headerIn 0.55s ease-out both;
+}
+
+@keyframes headerIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* ALERT SUMMARY CARDS */
+.stat-card {
+    opacity: 0;
+    animation: statCardIn 0.55s ease-out forwards;
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
+}
+
+.stat-card:nth-child(1) {
+    animation-delay: 0.08s;
+}
+
+.stat-card:nth-child(2) {
+    animation-delay: 0.16s;
+}
+
+.stat-card:nth-child(3) {
+    animation-delay: 0.24s;
+}
+
+.stat-card:nth-child(4) {
+    animation-delay: 0.32s;
+}
+
+@keyframes statCardIn {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    border-color: #D6E4FF;
+    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.08);
+}
+
+.stat-value {
+    transition:
+        color 0.25s ease,
+        transform 0.25s ease;
+}
+
+.stat-card:hover .stat-value {
+    color: var(--blue);
+    transform: translateX(2px);
+}
+
+
+/* ALERT PANELS */
+.panel {
+    opacity: 0;
+    animation: panelIn 0.55s ease-out forwards;
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
+}
+
+.panel:nth-child(1) {
+    animation-delay: 0.35s;
+}
+
+.panel:nth-child(2) {
+    animation-delay: 0.45s;
+}
+
+@keyframes panelIn {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.panel:hover {
+    transform: translateY(-2px);
+    border-color: #DDE6F2;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.055);
+}
+
+
+/* PANEL TITLE */
+.panel-title {
+    transition: color 0.2s ease;
+}
+
+.panel:hover .panel-title {
+    color: var(--blue);
+}
+
+
+/* ALERT TABLE */
+.alert-table {
+    animation: tableReveal 0.7s ease-out 0.45s both;
+}
+
+@keyframes tableReveal {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* ALERT ROWS */
+.alert-table tbody tr {
+    animation: alertRowIn 0.4s ease-out both;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+@keyframes alertRowIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.alert-table tbody tr:hover {
+    background: #F8FAFC;
+    transform: translateX(3px);
+}
+
+
+/* SEVERITY BADGES */
+.severity {
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.severity:hover {
+    transform: scale(1.06);
+}
+
+
+/* HIGH SEVERITY */
+.severity.high {
+    animation: highSeverityPulse 2s ease-in-out infinite;
+}
+
+@keyframes highSeverityPulse {
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+    }
+
+    50% {
+        box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.08);
+    }
+}
+
+
+/* MEDIUM SEVERITY */
+.severity.medium {
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.severity.medium:hover {
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.08);
+}
+
+
+/* LOW SEVERITY */
+.severity.low {
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.severity.low:hover {
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.08);
+}
+
+
+/* ALERT STATUS */
+.alert-status {
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease;
+}
+
+.alert-status:hover {
+    transform: scale(1.05);
+}
+
+
+/* UNRESOLVED STATUS */
+.status.unresolved,
+.alert-status.unresolved {
+    animation: unresolvedPulse 2s ease-in-out infinite;
+}
+
+@keyframes unresolvedPulse {
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+    }
+
+    50% {
+        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.07);
+    }
+}
+
+
+/* RESOLVED STATUS */
+.status.resolved,
+.alert-status.resolved {
+    transition: transform 0.2s ease;
+}
+
+.status.resolved:hover,
+.alert-status.resolved:hover {
+    transform: scale(1.05);
+}
+
+
+/* FILTERS */
+input,
+select {
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+input:hover,
+select:hover {
+    border-color: #CBD5E1;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+}
+
+
+/* BUTTONS */
+button,
+.action-btn,
+.refresh-btn,
+.export-btn {
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+button:hover,
+.action-btn:hover,
+.refresh-btn:hover,
+.export-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 16px rgba(37, 99, 235, 0.12);
+}
+
+button:active,
+.action-btn:active,
+.refresh-btn:active,
+.export-btn:active {
+    transform: scale(0.97);
+}
+
+
+/* REFRESH BUTTON */
+.refresh-btn:hover {
+    transform: translateY(-2px) rotate(1deg);
+}
+
+
+/* ALERT DETAILS / EXPANDED CONTENT */
+.alert-details {
+    animation: detailsIn 0.35s ease-out both;
+}
+
+@keyframes detailsIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* EMPTY ALERT STATE */
+.empty-state {
+    animation: emptyStateIn 0.5s ease-out both;
+}
+
+@keyframes emptyStateIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* LOADING */
+.loading {
+    animation: loadingFade 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes loadingFade {
+    from {
+        opacity: 0.45;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+
+/* PAGINATION */
+.pagination button {
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.pagination button:hover {
+    transform: translateY(-2px);
+}
+
+
+/* SYSTEM CARD */
+.system-card {
+    padding: 11px 12px;
+
+    background: #F8FAFC;
+
+    border: 1px solid #E7ECF3;
+
+    border-radius: 9px;
+}
+
+.system-title {
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    color: #334155;
+}
+
+.status-dot {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: #22C55E;
+
+    animation: systemPulse 1.8s ease-in-out infinite;
+}
+
+.system-subtitle {
+    margin-top: 5px;
+
+    font-size: 10px;
+
+    color: #64748B;
+}
+
+/* LOGOUT */
+.logout-button {
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.logout-button:hover {
+    transform: translateX(3px);
+}
+
+
+/* SCROLLBAR */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #F7F9FC;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #94A3B8;
+}
+
+
+/* REDUCE MOTION */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =================================
+         APP
+    ================================= -->
+
+    <div class="app">
+
+
+        <!-- =================================
+             SIDEBAR
+        ================================= -->
+
+        <aside class="sidebar">
+
+            <!-- PROFILE -->
+            <a href="{{ url_for('profile') }}" class="profile-section">
+
+                <div class="profile-avatar">
+                    {{ session.get('user_name', 'U')[0].upper() }}
+                </div>
+
+                <div class="profile-info">
+
+                    <div class="profile-name">
+                        {{ session.get('user_name', 'User') }}
+                    </div>
+
+                    <div class="profile-username">
+                        @{{ session.get('username', 'user') }}
+                    </div>
+
+                </div>
+
+            </a>
+
+
+            <!-- NAVIGATION -->
+            <nav class="nav">
+
+                <a href="/">
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="/traffic">
+                    <span>Traffic Monitor</span>
+                </a>
+
+                <a href="/alerts" class="active">
+                    <span>Alerts</span>
+                </a>
+
+                <a href="/analysis">
+                    <span>Analysis</span>
+                </a>
+
+                <a href="/reports">
+                    <span>Reports</span>
+                </a>
+
+                <a href="/logs">
+                    <span>Logs</span>
+                </a>
+
+            </nav>
+
+
+            <!-- SIDEBAR BOTTOM -->
+            <div class="sidebar-bottom">
+
+                <!-- LOGOUT -->
+                <a href="{{ url_for('logout') }}" class="logout-button">
+                    
+                    <span>Logout</span>
+                </a>
+
+
+                <!-- SYSTEM STATUS -->
+                <div class="system-card">
+
+                    <div class="system-title">
+                        <span class="status-dot"></span>
+                        System Status
+                    </div>
+
+                    <div class="system-subtitle">
+                        All systems operational
+                    </div>
+
+                </div>
+
+
+                <!-- VERSION -->
+                <div class="version">
+                    NIDS v1.0
+                </div>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =================================
+             MAIN
+        ================================= -->
+
+        <main class="main">
+
+
+            <!-- TOPBAR -->
+
+            <header class="topbar">
+
+
+                <div class="topbar-title">
+
+                    <span class="topbar-dot"></span>
+
+                    Network Intrusion Detection System
+
+                </div>
+
+
+                <div class="top-right">
+
+                    <div class="topbar-status">
+
+                        <span class="live-dot"></span>
+
+                        Live Monitoring
+
+                    </div>
+
+                </div>
+
+
+            </header>
+
+
+
+            <!-- CONTENT -->
+
+            <div class="content">
+
+
+                <!-- PAGE HEADER -->
+
+                <div class="page-header">
+
+                    <h1>
+                        Network Intrusion Alerts
+                    </h1>
+
+                    <p>
+                        Monitor detected attacks and investigate their AI explanations
+                    </p>
+
+                </div>
+
+
+
+                <!-- ALERT PANEL -->
+
+                <div class="panel">
+
+
+                    <div class="panel-header">
+
+                        <div class="panel-title">
+                            Detected Attacks
+                        </div>
+
+                        <div class="panel-subtitle">
+                            Real-time intrusion alerts
+                        </div>
+
+                    </div>
+
+
+                    <div class="panel-body">
+
+
+                        <div id="loading">
+
+                            Loading alerts...
+
+                        </div>
+
+
+                        <div class="table-wrapper">
+
+
+                            <table id="alertsTable"
+                                   class="alerts-table"
+                                   style="display: none;">
+
+
+                                <thead>
+
+                                    <tr>
+
+                                        <th>
+                                            SOURCE IP
+                                        </th>
+
+                                        <th>
+                                            DESTINATION IP
+                                        </th>
+
+                                        <th>
+                                            SRC PORT
+                                        </th>
+
+                                        <th>
+                                            DEST PORT
+                                        </th>
+
+                                        <th>
+                                            ATTACK TYPE
+                                        </th>
+
+                                        <th>
+                                            CONFIDENCE
+                                        </th>
+
+                                        <th>
+                                            RISK SCORE
+                                        </th>
+
+                                        <th>
+                                            SEVERITY
+                                        </th>
+
+                                        <th>
+                                            STATUS
+                                        </th>
+
+                                        <th>
+                                            EXPLANATION
+                                        </th>
+
+                                    </tr>
+
+                                </thead>
+
+
+                                <tbody id="alertsBody">
+
+                                </tbody>
+
+
+                            </table>
+
+                        </div>
+
+
+                        <div id="empty"
+                             class="empty"
+                             style="display: none;">
+
+                            No attacks detected.
+
+                        </div>
+
+
+                        <div id="error"
+                             style="display: none;">
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- SHAP EXPLANATION -->
+
+                <div class="panel"
+                     id="explanationSection">
+
+
+                    <div class="panel-header">
+
+                        <div class="panel-title">
+                            AI Explanation
+                        </div>
+
+                    </div>
+
+
+                    <div class="shap-container">
+
+
+                        <p class="explanation-description">
+
+                            The following features contributed to the selected
+                            intrusion detection decision.
+
+                        </p>
+
+
+                        <div id="explanationContainer">
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+
+    <!-- =================================
+         JAVASCRIPT
+    ================================= -->
+
+    <script>
+
+
+        /* =================================
+           LOAD ALERTS
+        ================================= */
+
+        async function loadAlerts() {
+
+            try {
+
+
+                const response =
+                    await fetch("/api/alerts");
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Failed to load alerts"
+                    );
+
+                }
+
+
+                const alerts =
+                    await response.json();
+
+
+                const table =
+                    document.getElementById(
+                        "alertsTable"
+                    );
+
+
+                const tableBody =
+                    document.getElementById(
+                        "alertsBody"
+                    );
+
+
+                const loading =
+                    document.getElementById(
+                        "loading"
+                    );
+
+
+                const empty =
+                    document.getElementById(
+                        "empty"
+                    );
+
+
+                const error =
+                    document.getElementById(
+                        "error"
+                    );
+
+
+                tableBody.innerHTML =
+                    "";
+
+
+                loading.style.display =
+                    "none";
+
+
+                error.style.display =
+                    "none";
+
+
+                /* ================================
+                   NO ALERTS
+                ================================= */
+
+                if (alerts.length === 0) {
+
+                    table.style.display =
+                        "none";
+
+                    empty.style.display =
+                        "block";
+
+                    return;
+
+                }
+
+
+                /* ================================
+                   SHOW TABLE
+                ================================= */
+
+                table.style.display =
+                    "table";
+
+
+                empty.style.display =
+                    "none";
+
+
+                /* ================================
+                   STORE ALERTS
+                ================================= */
+
+                window.alertData =
+                    alerts;
+
+
+                /* ================================
+                   CREATE ROWS
+                ================================= */
+
+                alerts.forEach(alert => {
+
+
+                    const row =
+                        document.createElement(
+                            "tr"
+                        );
+
+
+                    const severity =
+                        String(
+                            alert.severity || ""
+                        ).toLowerCase();
+
+
+                    const status =
+                        String(
+                            alert.status || ""
+                        ).toLowerCase();
+
+
+                    let statusClass =
+                        "";
+
+
+                    if (
+                        status === "resolved"
+                    ) {
+
+                        statusClass =
+                            "status-resolved";
+
+                    }
+
+                    else {
+
+                        statusClass =
+                            "status-unresolved";
+
+                    }
+
+
+                    row.innerHTML = `
+
+                        <td>
+                            ${alert.source_ip || "N/A"}
+                        </td>
+
+
+                        <td>
+                            ${alert.destination_ip || "N/A"}
+                        </td>
+
+
+                        <td>
+                            ${alert.source_port || 0}
+                        </td>
+
+
+                        <td>
+                            ${alert.destination_port || 0}
+                        </td>
+
+
+                        <td>
+                            ${alert.attack_type || "Attack"}
+                        </td>
+
+
+                        <td>
+                            ${alert.confidence ?? 0}%
+                        </td>
+
+
+                        <td>
+                            ${alert.risk_score ?? 0}
+                        </td>
+
+
+                        <td class="${severity}">
+                            ${alert.severity || "Unknown"}
+                        </td>
+
+
+                        <td>
+
+                            <span class="status ${statusClass}">
+                                ${alert.status || "Unresolved"}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <button
+                                class="view-btn"
+                                onclick="loadExplanation(${alert.id})">
+
+                                View
+
+                            </button>
+
+                        </td>
+
+                    `;
+
+
+                    tableBody.appendChild(
+                        row
+                    );
+
+                });
+
+            }
+
+
+            catch (error) {
+
+
+                console.error(
+                    "Alerts loading error:",
+                    error
+                );
+
+
+                document.getElementById(
+                    "loading"
+                ).style.display =
+                    "none";
+
+
+                const errorBox =
+                    document.getElementById(
+                        "error"
+                    );
+
+
+                errorBox.style.display =
+                    "block";
+
+
+                errorBox.textContent =
+                    "Error loading alerts: " +
+                    error.message;
+
+            }
+
+        }
+
+
+
+        /* =================================
+           LOAD SHAP EXPLANATION
+        ================================= */
+
+        async function loadExplanation(
+            alertId
+        ) {
+
+            if (!alertId) {
+                return;
+            }
+
+
+            try {
+
+
+                const response =
+                    await fetch(
+                        `/api/explanations/${alertId}`
+                    );
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Failed to load SHAP explanation"
+                    );
+
+                }
+
+
+                const explanations =
+                    await response.json();
+
+
+                displayExplanation(
+                    explanations
+                );
+
+            }
+
+
+            catch (error) {
+
+
+                console.error(
+                    "SHAP error:",
+                    error
+                );
+
+
+                alert(
+                    "Could not load explanation: " +
+                    error.message
+                );
+
+            }
+
+        }
+
+
+
+        /* =================================
+           DISPLAY SHAP
+        ================================= */
+
+        function displayExplanation(
+            explanations
+        ) {
+
+
+            const section =
+                document.getElementById(
+                    "explanationSection"
+                );
+
+
+            const container =
+                document.getElementById(
+                    "explanationContainer"
+                );
+
+
+            section.style.display =
+                "block";
+
+
+            container.innerHTML =
+                "";
+
+
+            if (
+                explanations.length === 0
+            ) {
+
+                container.innerHTML =
+                    `
+                    <p style="
+                        color:#64748B;
+                        font-size:13px;
+                    ">
+                        No explanation available.
+                    </p>
+                    `;
+
+                return;
+
+            }
+
+
+            /* ================================
+               SORT BY SHAP
+            ================================= */
+
+            explanations.sort(
+                (a, b) =>
+                    Math.abs(b.shap_value) -
+                    Math.abs(a.shap_value)
+            );
+
+
+            /* ================================
+               MAX SHAP VALUE
+            ================================= */
+
+            const maxValue =
+                Math.max(
+                    ...explanations.map(
+                        item =>
+                            Math.abs(
+                                item.shap_value
+                            )
+                    )
+                );
+
+
+            /* ================================
+               CREATE SHAP ROWS
+            ================================= */
+
+            explanations.forEach(
+                item => {
+
+
+                    const row =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    row.className =
+                        "shap-row";
+
+
+                    const percentage =
+                        maxValue === 0
+
+                            ? 0
+
+                            : (
+                                Math.abs(
+                                    item.shap_value
+                                ) /
+                                maxValue
+                            ) * 100;
+
+
+                    const barClass =
+                        item.shap_value >= 0
+
+                            ? "attack-bar"
+
+                            : "normal-bar";
+
+
+                    row.innerHTML = `
+
+                        <div class="feature-header">
+
+                            <span class="feature-name">
+
+                                ${item.feature_name}
+
+                            </span>
+
+
+                            <span class="shap-value">
+
+                                SHAP:
+                                ${Number(
+                                    item.shap_value
+                                ).toFixed(4)}
+
+                            </span>
+
+                        </div>
+
+
+                        <div class="value">
+
+                            Feature value:
+                            ${item.feature_value}
+
+                            &nbsp; | &nbsp;
+
+                            Contribution:
+                            ${item.contribution}
+
+                        </div>
+
+
+                        <div class="bar-container">
+
+                            <div
+                                class="bar ${barClass}"
+                                style="
+                                    width: ${percentage}%;
+                                "
+                            ></div>
+
+                        </div>
+
+                    `;
+
+
+                    container.appendChild(
+                        row
+                    );
+
+                }
+            );
+
+
+            /* ================================
+               SCROLL TO EXPLANATION
+            ================================= */
+
+            section.scrollIntoView({
+                behavior: "smooth"
+            });
+
+        }
+
+
+
+        /* =================================
+           INITIAL LOAD
+        ================================= */
+
+        loadAlerts();
+
+
+
+        /* =================================
+           AUTO REFRESH
+        ================================= */
+
+        setInterval(
+            loadAlerts,
+            5000
+        );
+
+
+    </script>
+
+
+</body>
+
+</html>

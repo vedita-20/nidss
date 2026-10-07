@@ -1,0 +1,4 @@
+venv/
+.env
+MachineLearningCVE/
+dummy_malicious_traffic.csv/

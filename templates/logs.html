@@ -1,0 +1,2979 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>NIDS - Logs</title>
+
+
+<style>
+
+/* =================================
+   RESET
+================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+/* =================================
+   VARIABLES
+================================= */
+
+:root {
+
+    --bg: #F7F9FC;
+
+    --white: #FFFFFF;
+
+    --blue: #2563EB;
+
+    --blue-light: #EEF4FF;
+
+    --text: #172033;
+
+    --muted: #64748B;
+
+    --border: #E7ECF3;
+
+    --green: #16A34A;
+
+    --green-light: #ECFDF3;
+
+    --red: #DC2626;
+
+    --red-light: #FDECEC;
+
+    --orange: #D97706;
+
+    --orange-light: #FFF7ED;
+
+}
+
+
+/* =================================
+   BODY
+================================= */
+
+body {
+
+    font-family:
+        "Inter",
+        Arial,
+        sans-serif;
+
+    background:
+        var(--bg);
+
+    color:
+        var(--text);
+
+    min-height:
+        100vh;
+
+    overflow-x:
+        hidden;
+
+}
+
+
+/* =================================
+   APP
+================================= */
+
+.app {
+
+    display:
+        flex;
+
+    min-height:
+        100vh;
+
+}
+
+
+/* =================================
+   SIDEBAR
+================================= */
+
+.sidebar {
+
+    width:
+        200px;
+
+    min-width:
+        200px;
+
+    height:
+        100vh;
+
+    background:
+        var(--white);
+
+    border-right:
+        1px solid var(--border);
+
+    position:
+        fixed;
+
+    left:
+        0;
+
+    top:
+        0;
+
+    bottom:
+        0;
+
+    z-index:
+        100;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+}
+
+
+/* =================================
+   PROFILE
+================================= */
+
+.profile-section {
+
+    display:
+        block;
+
+    padding:
+        18px 16px;
+
+    border-bottom:
+        1px solid var(--border);
+
+    text-decoration:
+        none;
+
+    cursor:
+        pointer;
+
+    transition:
+        background 0.2s ease;
+
+}
+
+.profile-section:hover {
+
+    background:
+        #F8FAFC;
+
+}
+
+
+.profile-avatar {
+
+    width:
+        42px;
+
+    height:
+        42px;
+
+    border-radius:
+        50%;
+
+    background:
+        #EFF6FF;
+
+    color:
+        var(--blue);
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    font-size:
+        17px;
+
+    font-weight:
+        700;
+
+    margin-bottom:
+        10px;
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+
+}
+
+
+.profile-section:hover .profile-avatar {
+
+    transform:
+        scale(1.05);
+
+    box-shadow:
+        0 0 0 5px #EFF6FF;
+
+}
+
+
+.profile-name {
+
+    font-size:
+        14px;
+
+    font-weight:
+        600;
+
+    color:
+        var(--text);
+
+    white-space:
+        nowrap;
+
+    overflow:
+        hidden;
+
+    text-overflow:
+        ellipsis;
+
+}
+
+
+.profile-username {
+
+    margin-top:
+        3px;
+
+    font-size:
+        12px;
+
+    color:
+        var(--muted);
+
+    white-space:
+        nowrap;
+
+    overflow:
+        hidden;
+
+    text-overflow:
+        ellipsis;
+
+}
+
+
+/* =================================
+   NAVIGATION
+================================= */
+
+.nav {
+
+    padding:
+        16px 10px;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        5px;
+
+    flex:
+        1;
+
+}
+
+
+.nav a {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    height:
+        42px;
+
+    padding:
+        0 14px;
+
+    border-radius:
+        9px;
+
+    text-decoration:
+        none;
+
+    color:
+        var(--muted);
+
+    font-size:
+        13px;
+
+    font-weight:
+        500;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+
+}
+
+
+.nav a:hover {
+
+    background:
+        #F1F5F9;
+
+    color:
+        var(--blue);
+
+    transform:
+        translateX(3px);
+
+}
+
+
+.nav a.active {
+
+    background:
+        var(--blue-light);
+
+    color:
+        var(--blue);
+
+    font-weight:
+        600;
+
+}
+
+
+/* =================================
+   SIDEBAR BOTTOM
+================================= */
+
+.sidebar-bottom {
+
+    margin-top:
+        auto;
+
+    padding:
+        12px 10px 18px;
+
+}
+
+
+/* =================================
+   LOGOUT
+================================= */
+
+.logout-button {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        10px;
+
+    padding:
+        10px 12px;
+
+    margin-bottom:
+        10px;
+
+    color:
+        var(--muted);
+
+    text-decoration:
+        none;
+
+    font-size:
+        13px;
+
+    font-weight:
+        500;
+
+    border-radius:
+        8px;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+
+}
+
+
+.logout-button:hover {
+
+    background:
+        #FEF2F2;
+
+    color:
+        var(--red);
+
+    transform:
+        translateX(2px);
+
+}
+
+
+/* =================================
+   SYSTEM STATUS
+================================= */
+
+.system-card {
+
+    padding:
+        11px 12px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:
+        9px;
+
+    background:
+        #FCFDFE;
+
+}
+
+
+.system-title {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        7px;
+
+    color:
+        #475569;
+
+    font-size:
+        11px;
+
+    font-weight:
+        600;
+
+}
+
+
+.status-dot {
+
+    width:
+        7px;
+
+    height:
+        7px;
+
+    border-radius:
+        50%;
+
+    background:
+        #22C55E;
+
+    animation:
+        systemPulse 2s infinite;
+
+}
+
+
+@keyframes systemPulse {
+
+    0% {
+
+        box-shadow:
+            0 0 0 0 rgba(34, 197, 94, 0.3);
+
+    }
+
+    70% {
+
+        box-shadow:
+            0 0 0 5px rgba(34, 197, 94, 0);
+
+    }
+
+    100% {
+
+        box-shadow:
+            0 0 0 0 rgba(34, 197, 94, 0);
+
+    }
+
+}
+
+
+.system-subtitle {
+
+    margin-top:
+        4px;
+
+    color:
+        #94A3B8;
+
+    font-size:
+        10px;
+
+}
+
+
+/* =================================
+   VERSION
+================================= */
+
+.version {
+
+    text-align:
+        center;
+
+    margin-top:
+        10px;
+
+    color:
+        #94A3B8;
+
+    font-size:
+        10px;
+
+}
+
+
+/* =================================
+   MAIN
+================================= */
+
+.main {
+
+    margin-left:
+        200px;
+
+    width:
+        calc(100% - 200px);
+
+    min-height:
+        100vh;
+
+}
+
+
+/* =================================
+   TOPBAR
+================================= */
+
+.topbar {
+
+    width:
+        100%;
+
+    min-height:
+        64px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    padding:
+        0 28px;
+
+    background:
+        #FFFFFF;
+
+    border-bottom:
+        1px solid var(--border);
+
+    animation:
+        topbarEnter 0.45s ease-out;
+
+}
+
+
+@keyframes topbarEnter {
+
+    from {
+
+        opacity:
+            0;
+
+        transform:
+            translateY(-8px);
+
+    }
+
+    to {
+
+        opacity:
+            1;
+
+        transform:
+            translateY(0);
+
+    }
+
+}
+
+
+.topbar-title {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        10px;
+
+    font-size:
+        18px;
+
+    font-weight:
+        600;
+
+    color:
+        var(--text);
+
+    white-space:
+        nowrap;
+
+}
+
+
+.top-right {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    margin-left:
+        auto;
+
+    flex-shrink:
+        0;
+
+}
+
+
+.topbar-status {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        8px;
+
+    padding:
+        7px 12px;
+
+    font-size:
+        13px;
+
+    font-weight:
+        500;
+
+    color:
+        #475569;
+
+    background:
+        #F8FAFC;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:
+        20px;
+
+    white-space:
+        nowrap;
+
+}
+
+
+.live-dot {
+
+    width:
+        7px;
+
+    height:
+        7px;
+
+    flex-shrink:
+        0;
+
+    border-radius:
+        50%;
+
+    background:
+        #22C55E;
+
+    animation:
+        livePulse 1.8s infinite;
+
+}
+
+
+@keyframes livePulse {
+
+    0% {
+
+        box-shadow:
+            0 0 0 0 rgba(34, 197, 94, 0.4);
+
+    }
+
+    70% {
+
+        box-shadow:
+            0 0 0 7px rgba(34, 197, 94, 0);
+
+    }
+
+    100% {
+
+        box-shadow:
+            0 0 0 0 rgba(34, 197, 94, 0);
+
+    }
+
+}
+
+
+/* =================================
+   CONTENT
+================================= */
+
+.content {
+
+    padding:
+        28px 32px 40px;
+
+    max-width:
+        1600px;
+
+    margin:
+        0 auto;
+
+    animation:
+        pageEnter 0.5s ease-out;
+
+}
+
+
+@keyframes pageEnter {
+
+    from {
+
+        opacity:
+            0;
+
+        transform:
+            translateY(10px);
+
+    }
+
+    to {
+
+        opacity:
+            1;
+
+        transform:
+            translateY(0);
+
+    }
+
+}
+
+
+/* =================================
+   PAGE HEADER
+================================= */
+
+.page-header {
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        flex-start;
+
+    margin-bottom:
+        22px;
+
+}
+
+
+.page-title h1 {
+
+    font-size:
+        26px;
+
+    font-weight:
+        700;
+
+    color:
+        var(--text);
+
+    margin-bottom:
+        6px;
+
+}
+
+
+.page-title p {
+
+    color:
+        var(--muted);
+
+    font-size:
+        14px;
+
+}
+
+
+/* =================================
+   LIVE STATUS
+================================= */
+
+.monitor-status {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        8px;
+
+    padding:
+        8px 13px;
+
+    border:
+        1px solid #DDEBE2;
+
+    border-radius:
+        20px;
+
+    background:
+        #F4FBF6;
+
+    color:
+        #3F6B4B;
+
+    font-size:
+        12px;
+
+    font-weight:
+        500;
+
+}
+
+
+.monitor-dot {
+
+    width:
+        7px;
+
+    height:
+        7px;
+
+    border-radius:
+        50%;
+
+    background:
+        #22C55E;
+
+    animation:
+        monitorPulse 1.8s infinite;
+
+}
+
+
+@keyframes monitorPulse {
+
+    0% {
+
+        box-shadow:
+            0 0 0 0 rgba(34, 197, 94, 0.35);
+
+    }
+
+    70% {
+
+        box-shadow:
+            0 0 0 6px rgba(34, 197, 94, 0);
+
+    }
+
+    100% {
+
+        box-shadow:
+            0 0 0 0 rgba(34, 197, 94, 0);
+
+    }
+
+}
+
+
+/* =================================
+   PANEL
+================================= */
+/* =========================================================
+   LOGS PAGE ANIMATIONS
+   ========================================================= */
+
+/* PAGE LOAD */
+body {
+    animation: pageFadeIn 0.45s ease-out both;
+}
+
+@keyframes pageFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+
+/* SIDEBAR */
+.sidebar {
+    animation: sidebarIn 0.45s ease-out both;
+}
+
+@keyframes sidebarIn {
+    from {
+        opacity: 0;
+        transform: translateX(-18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+
+/* PROFILE */
+.profile-section {
+    transition:
+        background 0.25s ease,
+        transform 0.25s ease;
+}
+
+.profile-section:hover {
+    background: #F8FAFC;
+    transform: translateX(2px);
+}
+
+.profile-avatar {
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.profile-section:hover .profile-avatar {
+    transform: scale(1.06);
+    box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.08);
+}
+
+
+/* NAVIGATION */
+.nav a {
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease,
+        padding-left 0.2s ease;
+}
+
+.nav a:hover {
+    transform: translateX(4px);
+    padding-left: 16px;
+}
+
+.nav a.active {
+    box-shadow: inset 3px 0 0 var(--blue);
+}
+
+
+/* TOPBAR */
+.topbar {
+    animation: topbarIn 0.5s ease-out both;
+}
+
+@keyframes topbarIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* LIVE STATUS */
+.live-dot,
+.status-dot {
+    animation: livePulse 1.8s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.35);
+    }
+
+    70% {
+        box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+    }
+}
+
+
+/* CONTENT */
+.content {
+    animation: contentIn 0.55s ease-out both;
+}
+
+@keyframes contentIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* PAGE HEADER */
+.page-header {
+    animation: headerIn 0.55s ease-out both;
+}
+
+@keyframes headerIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* LOG SUMMARY CARDS */
+.stat-card,
+.summary-card {
+    opacity: 0;
+    animation: cardIn 0.55s ease-out forwards;
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
+}
+
+.stat-card:nth-child(1),
+.summary-card:nth-child(1) {
+    animation-delay: 0.08s;
+}
+
+.stat-card:nth-child(2),
+.summary-card:nth-child(2) {
+    animation-delay: 0.16s;
+}
+
+.stat-card:nth-child(3),
+.summary-card:nth-child(3) {
+    animation-delay: 0.24s;
+}
+
+.stat-card:nth-child(4),
+.summary-card:nth-child(4) {
+    animation-delay: 0.32s;
+}
+
+@keyframes cardIn {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stat-card:hover,
+.summary-card:hover {
+    transform: translateY(-5px);
+    border-color: #D6E4FF;
+    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.08);
+}
+
+
+/* LOG PANEL */
+.panel {
+    opacity: 0;
+    animation: panelIn 0.55s ease-out forwards;
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
+}
+
+.panel:nth-child(1) {
+    animation-delay: 0.35s;
+}
+
+.panel:nth-child(2) {
+    animation-delay: 0.45s;
+}
+
+@keyframes panelIn {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.panel:hover {
+    transform: translateY(-2px);
+    border-color: #DDE6F2;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.055);
+}
+
+
+/* LOG TABLE */
+.log-table {
+    animation: tableReveal 0.7s ease-out 0.45s both;
+}
+
+@keyframes tableReveal {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* LOG ROWS */
+.log-table tbody tr {
+    animation: logRowIn 0.35s ease-out both;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+@keyframes logRowIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.log-table tbody tr:hover {
+    background: #F4F7FB;
+    transform: translateX(3px);
+}
+
+
+/* LOG TIMESTAMP */
+.timestamp {
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.log-table tbody tr:hover .timestamp {
+    color: var(--blue);
+    transform: translateX(2px);
+}
+
+
+/* LOG TYPE / EVENT */
+.log-type,
+.event-type {
+    transition:
+        transform 0.2s ease,
+        color 0.2s ease;
+}
+
+.log-table tbody tr:hover .log-type,
+.log-table tbody tr:hover .event-type {
+    transform: translateX(2px);
+}
+
+
+/* STATUS BADGES */
+.status,
+.log-status {
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.status:hover,
+.log-status:hover {
+    transform: scale(1.05);
+}
+
+
+/* ATTACK LOGS */
+.status.attack,
+.log-status.attack,
+.event-attack {
+    animation: attackPulse 2s ease-in-out infinite;
+}
+
+@keyframes attackPulse {
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+    }
+
+    50% {
+        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.08);
+    }
+}
+
+
+/* NORMAL LOGS */
+.status.normal,
+.log-status.normal,
+.event-normal {
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.status.normal:hover,
+.log-status.normal:hover,
+.event-normal:hover {
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.07);
+}
+
+
+/* UNRESOLVED */
+.status.unresolved,
+.log-status.unresolved {
+    animation: unresolvedPulse 2s ease-in-out infinite;
+}
+
+@keyframes unresolvedPulse {
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+    }
+
+    50% {
+        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.07);
+    }
+}
+
+
+/* FILTERS */
+input,
+select {
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+input:hover,
+select:hover {
+    border-color: #CBD5E1;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+}
+
+
+/* SEARCH */
+.search-box {
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.search-box:focus-within {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 14px rgba(37, 99, 235, 0.06);
+}
+
+
+/* BUTTONS */
+button,
+.action-btn,
+.refresh-btn,
+.export-btn {
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+button:hover,
+.action-btn:hover,
+.refresh-btn:hover,
+.export-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 16px rgba(37, 99, 235, 0.12);
+}
+
+button:active,
+.action-btn:active,
+.refresh-btn:active,
+.export-btn:active {
+    transform: scale(0.97);
+}
+
+
+/* REFRESH */
+.refresh-btn:hover {
+    transform: translateY(-2px) rotate(1deg);
+}
+
+
+/* EMPTY STATE */
+.empty-state {
+    animation: emptyStateIn 0.5s ease-out both;
+}
+
+@keyframes emptyStateIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* LOADING */
+.loading {
+    animation: loadingFade 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes loadingFade {
+    from {
+        opacity: 0.45;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+
+/* PAGINATION */
+.pagination button {
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.pagination button:hover {
+    transform: translateY(-2px);
+}
+
+
+/* SYSTEM CARD */
+.system-card {
+    transition:
+        transform 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.system-card:hover {
+    transform: translateY(-2px);
+    border-color: #D6E4FF;
+    box-shadow: 0 5px 15px rgba(37, 99, 235, 0.06);
+}
+
+
+/* LOGOUT */
+.logout-button {
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.logout-button:hover {
+    transform: translateX(3px);
+}
+
+
+/* SCROLLBAR */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #F7F9FC;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #94A3B8;
+}
+
+
+/* REDUCE MOTION */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+.panel {
+
+    background:
+        var(--white);
+
+    border:
+        1px solid var(--border);
+
+    border-radius:
+        12px;
+
+    box-shadow:
+        0 3px 12px
+        rgba(15, 23, 42, 0.035);
+
+    overflow:
+        hidden;
+
+    animation:
+        panelEnter 0.55s ease-out;
+
+}
+
+
+@keyframes panelEnter {
+
+    from {
+
+        opacity:
+            0;
+
+        transform:
+            translateY(15px);
+
+    }
+
+    to {
+
+        opacity:
+            1;
+
+        transform:
+            translateY(0);
+
+    }
+
+}
+
+
+/* =================================
+   PANEL HEADER
+================================= */
+
+.panel-header {
+
+    padding:
+        17px 20px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    border-bottom:
+        1px solid var(--border);
+
+}
+
+
+.panel-title {
+
+    font-size:
+        15px;
+
+    font-weight:
+        600;
+
+    color:
+        var(--text);
+
+}
+
+
+.panel-subtitle {
+
+    color:
+        var(--muted);
+
+    font-size:
+        11px;
+
+}
+
+
+/* =================================
+   TABLE WRAPPER
+================================= */
+
+.table-wrapper {
+
+    width:
+        100%;
+
+    overflow-x:
+        auto;
+
+}
+
+
+/* =================================
+   TABLE
+================================= */
+
+table {
+
+    width:
+        100%;
+
+    min-width:
+        1250px;
+
+    border-collapse:
+        collapse;
+
+}
+
+
+th {
+
+    background:
+        #F8FAFC;
+
+    color:
+        #64748B;
+
+    text-align:
+        left;
+
+    padding:
+        12px 14px;
+
+    border-bottom:
+        1px solid var(--border);
+
+    font-size:
+        10px;
+
+    font-weight:
+        700;
+
+    letter-spacing:
+        0.2px;
+
+    white-space:
+        nowrap;
+
+}
+
+
+td {
+
+    padding:
+        13px 14px;
+
+    border-bottom:
+        1px solid #EEF2F7;
+
+    color:
+        #475569;
+
+    font-size:
+        12px;
+
+    white-space:
+        nowrap;
+
+}
+
+
+tbody tr {
+
+    transition:
+        background 0.18s ease,
+        transform 0.18s ease;
+
+}
+
+
+tbody tr:hover {
+
+    background:
+        #F8FAFC;
+
+}
+
+
+/* =================================
+   RESULT
+================================= */
+
+.normal {
+
+    color:
+        var(--green);
+
+    font-weight:
+        600;
+
+}
+
+
+.attack {
+
+    color:
+        var(--red);
+
+    font-weight:
+        600;
+
+}
+
+
+/* =================================
+   SEVERITY
+================================= */
+
+.high {
+
+    color:
+        var(--red);
+
+    font-weight:
+        600;
+
+}
+
+
+.medium {
+
+    color:
+        var(--orange);
+
+    font-weight:
+        600;
+
+}
+
+
+.low {
+
+    color:
+        var(--green);
+
+    font-weight:
+        600;
+
+}
+
+
+/* =================================
+   STATUS
+================================= */
+
+.unresolved {
+
+    color:
+        var(--red);
+
+    font-weight:
+        600;
+
+}
+
+
+.resolved {
+
+    color:
+        var(--green);
+
+    font-weight:
+        600;
+
+}
+
+
+/* =================================
+   BADGES
+================================= */
+
+.badge {
+
+    display:
+        inline-block;
+
+    padding:
+        5px 9px;
+
+    border-radius:
+        20px;
+
+    font-size:
+        10px;
+
+    font-weight:
+        600;
+
+}
+
+
+.badge-high {
+
+    background:
+        var(--red-light);
+
+    color:
+        var(--red);
+
+}
+
+
+.badge-medium {
+
+    background:
+        var(--orange-light);
+
+    color:
+        var(--orange);
+
+}
+
+
+.badge-low {
+
+    background:
+        var(--green-light);
+
+    color:
+        var(--green);
+
+}
+
+
+.badge-resolved {
+
+    background:
+        var(--green-light);
+
+    color:
+        var(--green);
+
+}
+
+
+.badge-unresolved {
+
+    background:
+        var(--red-light);
+
+    color:
+        var(--red);
+
+}
+
+
+/* =================================
+   HIGH SEVERITY ANIMATION
+================================= */
+
+.high-alert {
+
+    animation:
+        alertPulse 2s infinite;
+
+}
+
+
+@keyframes alertPulse {
+
+    0%,
+    100% {
+
+        opacity:
+            1;
+
+    }
+
+    50% {
+
+        opacity:
+            0.55;
+
+    }
+
+}
+
+
+/* =================================
+   LOADING
+================================= */
+
+.loading {
+
+    text-align:
+        center;
+
+    padding:
+        35px;
+
+    color:
+        #64748B;
+
+    font-size:
+        13px;
+
+}
+
+
+.loading::before {
+
+    content:
+        "";
+
+    display:
+        inline-block;
+
+    width:
+        12px;
+
+    height:
+        12px;
+
+    margin-right:
+        8px;
+
+    border:
+        2px solid #DBEAFE;
+
+    border-top-color:
+        var(--blue);
+
+    border-radius:
+        50%;
+
+    vertical-align:
+        -2px;
+
+    animation:
+        loadingSpin 0.8s linear infinite;
+
+}
+
+
+@keyframes loadingSpin {
+
+    to {
+
+        transform:
+            rotate(360deg);
+
+    }
+
+}
+
+
+/* =================================
+   ERROR / EMPTY
+================================= */
+
+.error,
+.empty {
+
+    text-align:
+        center;
+
+    padding:
+        35px;
+
+    font-size:
+        13px;
+
+}
+
+
+.empty {
+
+    color:
+        #64748B;
+
+}
+
+
+.error {
+
+    color:
+        var(--red);
+
+}
+
+
+/* =================================
+   LAST UPDATED
+================================= */
+
+.last-updated {
+
+    padding:
+        12px 20px;
+
+    color:
+        #94A3B8;
+
+    font-size:
+        11px;
+
+    border-top:
+        1px solid #F1F5F9;
+
+    background:
+        #FCFDFE;
+
+}
+
+
+/* =================================
+   ROW ENTER ANIMATION
+================================= */
+
+.log-row {
+
+    animation:
+        rowEnter 0.35s ease-out both;
+
+}
+
+
+@keyframes rowEnter {
+
+    from {
+
+        opacity:
+            0;
+
+        transform:
+            translateY(5px);
+
+    }
+
+    to {
+
+        opacity:
+            1;
+
+        transform:
+            translateY(0);
+
+    }
+
+}
+
+
+/* =================================
+   RESPONSIVE
+================================= */
+
+@media (max-width: 900px) {
+
+    .sidebar {
+
+        width:
+            180px;
+
+        min-width:
+            180px;
+
+    }
+
+
+    .main {
+
+        margin-left:
+            180px;
+
+        width:
+            calc(100% - 180px);
+
+    }
+
+
+    .content {
+
+        padding:
+            24px 20px 30px;
+
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .sidebar {
+
+        position:
+            relative;
+
+        width:
+            100%;
+
+        min-width:
+            100%;
+
+        height:
+            auto;
+
+        border-right:
+            none;
+
+        border-bottom:
+            1px solid var(--border);
+
+    }
+
+
+    .nav {
+
+        flex-direction:
+            row;
+
+        flex-wrap:
+            wrap;
+
+        flex:
+            none;
+
+    }
+
+
+    .sidebar-bottom {
+
+        margin-top:
+            0;
+
+    }
+
+
+    .main {
+
+        margin-left:
+            0;
+
+        width:
+            100%;
+
+    }
+
+
+    .topbar {
+
+        padding:
+            0 18px;
+
+    }
+
+
+    .topbar-title {
+
+        font-size:
+            16px;
+
+    }
+
+
+    .content {
+
+        padding:
+            20px 16px 30px;
+
+    }
+
+
+    .page-header {
+
+        flex-direction:
+            column;
+
+        gap:
+            14px;
+
+    }
+
+}
+
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="app">
+
+
+    <!-- =================================
+         SIDEBAR
+    ================================= -->
+
+    <aside class="sidebar">
+
+
+        <!-- PROFILE -->
+
+        <a
+            href="{{ url_for('profile') }}"
+            class="profile-section"
+        >
+
+            <div class="profile-avatar">
+
+                {{ session.get('user_name', 'U')[0].upper() }}
+
+            </div>
+
+
+            <div class="profile-name">
+
+                {{ session.get('user_name', 'User') }}
+
+            </div>
+
+
+            <div class="profile-username">
+
+                @{{ session.get('username', 'user') }}
+
+            </div>
+
+        </a>
+
+
+        <!-- NAVIGATION -->
+
+        <nav class="nav">
+
+
+            <a href="/">
+                Dashboard
+            </a>
+
+
+            <a href="/traffic">
+                Traffic Monitor
+            </a>
+
+
+            <a href="/alerts">
+                Alerts
+            </a>
+
+
+            <a href="/analysis">
+                Analysis
+            </a>
+
+
+            <a href="/reports">
+                Reports
+            </a>
+
+
+            <a
+                href="/logs"
+                class="active"
+            >
+                Logs
+            </a>
+
+
+        </nav>
+
+
+        <!-- SIDEBAR BOTTOM -->
+
+        <div class="sidebar-bottom">
+
+
+            <a
+                href="{{ url_for('logout') }}"
+                class="logout-button"
+            >
+
+                
+
+                <span>
+                    Logout
+                </span>
+
+            </a>
+
+
+            <div class="system-card">
+
+
+                <div class="system-title">
+
+                    <span class="status-dot"></span>
+
+                    System Status
+
+                </div>
+
+
+                <div class="system-subtitle">
+
+                    All systems operational
+
+                </div>
+
+
+            </div>
+
+
+            <div class="version">
+
+                NIDS v1.0
+
+            </div>
+
+
+        </div>
+
+
+    </aside>
+
+
+
+    <!-- =================================
+         MAIN
+    ================================= -->
+
+    <main class="main">
+
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+
+            <div class="topbar-title">
+
+                Network Intrusion Detection System
+
+            </div>
+
+
+            <div class="top-right">
+
+
+                <div class="topbar-status">
+
+                    <span class="live-dot"></span>
+
+                    Live Monitoring
+
+                </div>
+
+
+            </div>
+
+
+        </header>
+
+
+
+        <!-- CONTENT -->
+
+        <div class="content">
+
+
+            <!-- PAGE HEADER -->
+
+            <div class="page-header">
+
+
+                <div class="page-title">
+
+                    <h1>
+                        Network Logs
+                    </h1>
+
+                    <p>
+                        Historical traffic and detection activity
+                    </p>
+
+                </div>
+
+
+                <div class="monitor-status">
+
+                    <span class="monitor-dot"></span>
+
+                    Live log updates
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- LOG PANEL -->
+
+            <div class="panel">
+
+
+                <div class="panel-header">
+
+
+                    <div class="panel-title">
+
+                        Detection History
+
+                    </div>
+
+
+                    <div class="panel-subtitle">
+
+                        Automatically refreshed every 5 seconds
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="table-wrapper">
+
+
+                    <table>
+
+
+                        <thead>
+
+                            <tr>
+
+                                <th>TIME</th>
+
+                                <th>SOURCE IP</th>
+
+                                <th>SOURCE PORT</th>
+
+                                <th>DESTINATION IP</th>
+
+                                <th>DESTINATION PORT</th>
+
+                                <th>PROTOCOL</th>
+
+                                <th>PACKETS</th>
+
+                                <th>DURATION</th>
+
+                                <th>TOTAL BYTES</th>
+
+                                <th>RESULT</th>
+
+                                <th>ATTACK TYPE</th>
+
+                                <th>CONFIDENCE</th>
+
+                                <th>RISK SCORE</th>
+
+                                <th>SEVERITY</th>
+
+                                <th>STATUS</th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="logsBody">
+
+                            <tr>
+
+                                <td
+                                    colspan="15"
+                                    class="loading"
+                                >
+                                    Loading logs...
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+
+                    </table>
+
+
+                </div>
+
+
+                <div
+                    class="last-updated"
+                    id="lastUpdated"
+                >
+                    Last updated: -
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </main>
+
+
+</div>
+
+
+
+<script>
+
+
+/* =================================
+   LOAD LOGS
+================================= */
+
+async function loadLogs() {
+
+
+    const tableBody =
+        document.getElementById(
+            "logsBody"
+        );
+
+
+    try {
+
+
+        const response =
+            await fetch(
+                "/api/logs"
+            );
+
+
+        /* =========================
+           AUTHENTICATION
+        ========================= */
+
+        if (response.status === 401) {
+
+            window.location.href =
+                "/login";
+
+            return;
+
+        }
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Failed to load logs"
+            );
+
+        }
+
+
+        const logs =
+            await response.json();
+
+
+
+        /* =========================
+           EMPTY
+        ========================= */
+
+        if (
+            !logs ||
+            logs.length === 0
+        ) {
+
+
+            tableBody.innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="15"
+                        class="empty"
+                    >
+
+                        No network logs available.
+
+                    </td>
+
+                </tr>
+
+            `;
+
+
+            document.getElementById(
+                "lastUpdated"
+            ).textContent =
+                "Last updated: " +
+                new Date().toLocaleTimeString();
+
+
+            return;
+
+        }
+
+
+
+        /* =========================
+           CLEAR TABLE
+        ========================= */
+
+        tableBody.innerHTML =
+            "";
+
+
+
+        /* =========================
+           RENDER LOGS
+        ========================= */
+
+        logs.forEach(
+            (log, index) => {
+
+
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
+
+
+                row.className =
+                    "log-row";
+
+
+                row.style.animationDelay =
+                    `${Math.min(index * 0.025, 0.4)}s`;
+
+
+
+                /* =====================
+                   TIME
+                ===================== */
+
+                const timestamp =
+                    log.timestamp
+                        ? new Date(
+                            log.timestamp
+                          ).toLocaleString()
+                        : "-";
+
+
+
+                /* =====================
+                   RESULT
+                ===================== */
+
+                const result =
+                    log.result ||
+                    "Normal";
+
+
+                const resultClass =
+                    result === "Attack"
+                        ? "attack"
+                        : "normal";
+
+
+
+                /* =====================
+                   SEVERITY
+                ===================== */
+
+                const severity =
+                    String(
+                        log.severity || ""
+                    ).toLowerCase();
+
+
+                let severityClass =
+                    "";
+
+
+                if (
+                    severity === "high"
+                ) {
+
+                    severityClass =
+                        "high";
+
+                }
+
+                else if (
+                    severity === "medium"
+                ) {
+
+                    severityClass =
+                        "medium";
+
+                }
+
+                else if (
+                    severity === "low"
+                ) {
+
+                    severityClass =
+                        "low";
+
+                }
+
+
+
+                /* =====================
+                   STATUS
+                ===================== */
+
+                const status =
+                    String(
+                        log.status || ""
+                    );
+
+
+                const statusClass =
+                    status
+                        .toLowerCase()
+                        .replace(
+                            /\s+/g,
+                            ""
+                        );
+
+
+
+                /* =====================
+                   PROTOCOL
+                ===================== */
+
+                let protocol =
+                    log.protocol ||
+                    "-";
+
+
+                if (
+                    String(protocol) === "6"
+                ) {
+
+                    protocol =
+                        "TCP";
+
+                }
+
+                else if (
+                    String(protocol) === "17"
+                ) {
+
+                    protocol =
+                        "UDP";
+
+                }
+
+                else if (
+                    String(protocol) === "1"
+                ) {
+
+                    protocol =
+                        "ICMP";
+
+                }
+
+
+
+                /* =====================
+                   HIGH ALERT CLASS
+                ===================== */
+
+                const highAlertClass =
+                    severity === "high"
+                        ? "high-alert"
+                        : "";
+
+
+
+                /* =====================
+                   ROW HTML
+                ===================== */
+
+                row.innerHTML = `
+
+                    <td>
+                        ${timestamp}
+                    </td>
+
+
+                    <td>
+                        ${log.source_ip || "-"}
+                    </td>
+
+
+                    <td>
+                        ${log.source_port || "-"}
+                    </td>
+
+
+                    <td>
+                        ${log.destination_ip || "-"}
+                    </td>
+
+
+                    <td>
+                        ${log.destination_port || "-"}
+                    </td>
+
+
+                    <td>
+                        ${protocol}
+                    </td>
+
+
+                    <td>
+                        ${log.packet_count || 0}
+                    </td>
+
+
+                    <td>
+                        ${Number(
+                            log.flow_duration || 0
+                        ).toFixed(2)}
+                    </td>
+
+
+                    <td>
+                        ${log.total_bytes || 0}
+                    </td>
+
+
+                    <td class="${resultClass}">
+                        ${result}
+                    </td>
+
+
+                    <td>
+                        ${log.attack_type || "-"}
+                    </td>
+
+
+                    <td>
+                        ${Number(
+                            log.confidence || 0
+                        ).toFixed(2)}%
+                    </td>
+
+
+                    <td>
+                        ${Number(
+                            log.risk_score || 0
+                        ).toFixed(2)}
+                    </td>
+
+
+                    <td
+                        class="${severityClass} ${highAlertClass}"
+                    >
+                        ${log.severity || "-"}
+                    </td>
+
+
+                    <td class="${statusClass}">
+                        ${log.status || "-"}
+                    </td>
+
+                `;
+
+
+                tableBody.appendChild(
+                    row
+                );
+
+            }
+        );
+
+
+
+        /* =========================
+           LAST UPDATED
+        ========================= */
+
+        document.getElementById(
+            "lastUpdated"
+        ).textContent =
+            "Last updated: " +
+            new Date().toLocaleTimeString();
+
+
+    }
+
+
+    catch (error) {
+
+
+        console.error(
+            "Logs error:",
+            error
+        );
+
+
+        tableBody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="15"
+                    class="error"
+                >
+
+                    Failed to load network logs.
+
+                </td>
+
+            </tr>
+
+        `;
+
+
+        document.getElementById(
+            "lastUpdated"
+        ).textContent =
+            "Last updated: failed";
+
+    }
+
+}
+
+
+/* =================================
+   INITIAL LOAD
+================================= */
+
+loadLogs();
+
+
+/* =================================
+   AUTO REFRESH
+================================= */
+
+setInterval(
+    loadLogs,
+    5000
+);
+
+
+</script>
+
+
+</body>
+
+</html>

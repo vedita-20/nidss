@@ -1,0 +1,3000 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Reports | NIDS</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #F7F9FC;
+            --white: #FFFFFF;
+            --blue: #2563EB;
+            --blue-dark: #1D4ED8;
+            --blue-light: #EFF6FF;
+            --text: #172033;
+            --muted: #64748B;
+            --border: #E7ECF3;
+            --green: #16A34A;
+            --orange: #EA580C;
+            --red: #DC2626;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+
+            animation: pageFadeIn 0.45s ease-out both;
+        }
+
+
+        /* =========================================================
+           PAGE ANIMATIONS
+        ========================================================= */
+
+        @keyframes pageFadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes sidebarIn {
+            from {
+                opacity: 0;
+                transform: translateX(-18px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes topbarIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes contentIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes cardIn {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes panelIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes tableIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes rowIn {
+            from {
+                opacity: 0;
+                transform: translateX(-7px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes chartIn {
+            from {
+                opacity: 0;
+                transform: scale(0.97);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes livePulse {
+
+            0% {
+                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.35);
+            }
+
+            70% {
+                box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+            }
+        }
+
+
+        /* =========================================================
+           SIDEBAR
+        ========================================================= */
+
+        .sidebar {
+            position: fixed;
+
+            left: 0;
+            top: 0;
+
+            width: 200px;
+            height: 100vh;
+
+            background: white;
+            border-right: 1px solid var(--border);
+
+            display: flex;
+            flex-direction: column;
+
+            padding: 0;
+
+            animation: sidebarIn 0.45s ease-out both;
+        }
+
+
+        /* =========================================================
+           PROFILE
+        ========================================================= */
+
+        .profile-section {
+            display: block;
+
+            padding: 18px 16px;
+
+            border-bottom: 1px solid var(--border);
+
+            text-decoration: none;
+            cursor: pointer;
+
+            transition:
+                background 0.25s ease,
+                transform 0.25s ease;
+        }
+
+        .profile-section:hover {
+            background: #F8FAFC;
+            transform: translateX(2px);
+        }
+
+        .profile-avatar {
+            width: 42px;
+            height: 42px;
+
+            border-radius: 50%;
+
+            background: var(--blue-light);
+            color: var(--blue);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 17px;
+            font-weight: 700;
+
+            margin-bottom: 10px;
+
+            transition:
+                transform 0.3s ease,
+                box-shadow 0.3s ease;
+        }
+
+        .profile-section:hover .profile-avatar {
+            transform: scale(1.06);
+
+            box-shadow:
+                0 0 0 5px rgba(37, 99, 235, 0.08);
+        }
+
+        .profile-name {
+            font-size: 14px;
+            font-weight: 600;
+
+            color: var(--text);
+
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .profile-username {
+            margin-top: 3px;
+
+            font-size: 12px;
+
+            color: var(--muted);
+
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+
+        /* =========================================================
+           NAVIGATION
+        ========================================================= */
+
+        .nav {
+            padding: 16px 10px;
+
+            display: flex;
+            flex-direction: column;
+
+            gap: 5px;
+
+            flex: 1;
+        }
+
+        .nav-item {
+            display: block;
+
+            padding: 11px 13px;
+
+            border-radius: 8px;
+
+            text-decoration: none;
+
+            color: var(--muted);
+
+            font-size: 14px;
+
+            transition:
+                background 0.2s ease,
+                color 0.2s ease,
+                transform 0.2s ease,
+                padding-left 0.2s ease;
+        }
+
+        .nav-item:hover {
+            background: #F1F5F9;
+            color: var(--text);
+
+            transform: translateX(4px);
+
+            padding-left: 16px;
+        }
+
+        /* FIXED BLUE ACTIVE INDICATOR */
+
+        .nav-item.active {
+            background: var(--blue-light);
+
+            color: var(--blue);
+
+            font-weight: 600;
+
+            box-shadow:
+                inset 3px 0 0 var(--blue);
+        }
+
+
+        /* =========================================================
+           SIDEBAR BOTTOM
+        ========================================================= */
+
+        .sidebar-bottom {
+            margin-top: auto;
+
+            padding: 12px 10px 18px;
+        }
+
+        .logout-button {
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+
+            padding: 10px 12px;
+
+            margin-bottom: 10px;
+
+            color: var(--muted);
+
+            text-decoration: none;
+
+            font-size: 13px;
+            font-weight: 500;
+
+            border-radius: 8px;
+
+            transition:
+                background 0.2s ease,
+                color 0.2s ease,
+                transform 0.2s ease;
+        }
+
+        .logout-button:hover {
+            background: #FEF2F2;
+            color: var(--red);
+
+            transform: translateX(3px);
+        }
+
+        .system-card {
+            padding: 11px 12px;
+
+            background: #F8FAFC;
+
+            border: 1px solid var(--border);
+
+            border-radius: 9px;
+
+            transition:
+                transform 0.25s ease,
+                border-color 0.25s ease,
+                box-shadow 0.25s ease;
+        }
+
+        .system-card:hover {
+            transform: translateY(-2px);
+
+            border-color: #D6E4FF;
+
+            box-shadow:
+                0 5px 15px rgba(37, 99, 235, 0.06);
+        }
+
+        .system-title {
+            display: flex;
+            align-items: center;
+
+            gap: 7px;
+
+            font-size: 11px;
+
+            font-weight: 600;
+
+            color: #334155;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: #22C55E;
+
+            animation: livePulse 1.8s ease-in-out infinite;
+        }
+
+        .system-subtitle {
+            margin-top: 5px;
+
+            font-size: 10px;
+
+            color: var(--muted);
+        }
+
+        .version {
+            text-align: center;
+
+            margin-top: 10px;
+
+            color: #94A3B8;
+
+            font-size: 10px;
+        }
+
+
+        /* =========================================================
+           MAIN
+        ========================================================= */
+
+        .main {
+            margin-left: 200px;
+
+            min-height: 100vh;
+        }
+
+
+        /* =========================================================
+           TOPBAR
+        ========================================================= */
+
+        .topbar {
+            height: 64px;
+
+            background: white;
+
+            border-bottom: 1px solid var(--border);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 0 28px;
+
+            animation: topbarIn 0.5s ease-out both;
+        }
+
+        .page-title {
+            font-size: 21px;
+
+            font-weight: 600;
+        }
+
+        .topbar-actions {
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+        }
+
+        .action-btn {
+            border: 1px solid #E2E8F0;
+
+            background: white;
+
+            color: #475569;
+
+            padding: 8px 12px;
+
+            border-radius: 7px;
+
+            font-size: 12px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease,
+                background 0.2s ease,
+                border-color 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background: #F8FAFC;
+
+            border-color: #CBD5E1;
+
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 7px 16px rgba(37, 99, 235, 0.10);
+        }
+
+        .action-btn:active {
+            transform: scale(0.97);
+        }
+
+        .action-btn:disabled {
+            opacity: 0.6;
+
+            cursor: not-allowed;
+        }
+
+        .action-btn.primary {
+            background: var(--blue);
+
+            border-color: var(--blue);
+
+            color: white;
+        }
+
+        .action-btn.primary:hover {
+            background: var(--blue-dark);
+        }
+
+        .live-status {
+            display: flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            font-size: 12px;
+
+            color: var(--green);
+
+            font-weight: 600;
+
+            margin-left: 8px;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+
+            background: #22C55E;
+
+            border-radius: 50%;
+
+            animation: livePulse 1.8s ease-in-out infinite;
+        }
+
+
+        /* =========================================================
+           CONTENT
+        ========================================================= */
+
+        .content {
+            padding: 28px;
+
+            animation: contentIn 0.55s ease-out both;
+        }
+
+        .section-title {
+            font-size: 16px;
+
+            font-weight: 600;
+
+            margin-bottom: 5px;
+        }
+
+        .section-subtitle {
+            color: var(--muted);
+
+            font-size: 13px;
+
+            margin-bottom: 18px;
+        }
+
+
+        /* =========================================================
+           SUMMARY
+        ========================================================= */
+
+        .summary-grid {
+            display: grid;
+
+            grid-template-columns: repeat(4, 1fr);
+
+            gap: 16px;
+
+            margin-bottom: 28px;
+        }
+
+        .summary-card {
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: 12px;
+
+            padding: 20px;
+
+            box-shadow:
+                0 3px 12px rgba(15, 23, 42, .035);
+
+            opacity: 0;
+
+            animation:
+                cardIn 0.55s ease-out forwards;
+
+            transition:
+                transform 0.25s ease,
+                box-shadow 0.25s ease,
+                border-color 0.25s ease;
+        }
+
+        .summary-card:nth-child(1) {
+            animation-delay: 0.08s;
+        }
+
+        .summary-card:nth-child(2) {
+            animation-delay: 0.16s;
+        }
+
+        .summary-card:nth-child(3) {
+            animation-delay: 0.24s;
+        }
+
+        .summary-card:nth-child(4) {
+            animation-delay: 0.32s;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-5px);
+
+            border-color: #D6E4FF;
+
+            box-shadow:
+                0 10px 25px rgba(37, 99, 235, 0.08);
+        }
+
+        .summary-label {
+            font-size: 12px;
+
+            color: var(--muted);
+
+            margin-bottom: 8px;
+        }
+
+        .summary-value {
+            font-size: 25px;
+
+            font-weight: 700;
+
+            transition:
+                color 0.25s ease,
+                transform 0.25s ease;
+        }
+
+        .summary-card:hover .summary-value {
+            color: var(--blue);
+
+            transform: translateX(2px);
+        }
+
+        .summary-extra {
+            margin-top: 7px;
+
+            font-size: 11px;
+
+            color: var(--muted);
+        }
+
+
+        /* =========================================================
+           PANELS
+        ========================================================= */
+
+        .panel {
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: 12px;
+
+            padding: 20px;
+
+            box-shadow:
+                0 3px 12px rgba(15, 23, 42, .035);
+
+            margin-bottom: 20px;
+
+            opacity: 0;
+
+            animation:
+                panelIn 0.55s ease-out forwards;
+
+            transition:
+                transform 0.25s ease,
+                box-shadow 0.25s ease,
+                border-color 0.25s ease;
+        }
+
+        .panel:nth-child(1) {
+            animation-delay: 0.38s;
+        }
+
+        .panel:nth-child(2) {
+            animation-delay: 0.48s;
+        }
+
+        .panel:nth-child(3) {
+            animation-delay: 0.58s;
+        }
+
+        .panel:nth-child(4) {
+            animation-delay: 0.68s;
+        }
+
+        .panel:nth-child(5) {
+            animation-delay: 0.78s;
+        }
+
+        .panel:hover {
+            transform: translateY(-2px);
+
+            border-color: #DDE6F2;
+
+            box-shadow:
+                0 8px 20px rgba(15, 23, 42, .055);
+        }
+
+        .panel-header {
+            margin-bottom: 18px;
+        }
+
+        .panel-title {
+            font-size: 15px;
+
+            font-weight: 600;
+
+            transition: color 0.2s ease;
+        }
+
+        .panel:hover .panel-title {
+            color: var(--blue);
+        }
+
+        .panel-subtitle {
+            margin-top: 5px;
+
+            font-size: 12px;
+
+            color: var(--muted);
+        }
+
+
+        /* =========================================================
+           TWO COLUMN
+        ========================================================= */
+
+        .two-column {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 20px;
+        }
+
+
+        /* =========================================================
+           TABLE
+        ========================================================= */
+
+        table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            font-size: 12px;
+        }
+
+        th {
+            text-align: left;
+
+            padding: 11px 10px;
+
+            color: var(--muted);
+
+            font-weight: 600;
+
+            border-bottom:
+                1px solid var(--border);
+        }
+
+        td {
+            padding: 11px 10px;
+
+            border-bottom:
+                1px solid #F1F5F9;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr {
+            animation:
+                rowIn 0.35s ease-out both;
+
+            transition:
+                background 0.2s ease,
+                transform 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background: #F4F7FB;
+
+            transform: translateX(2px);
+        }
+
+
+        /* =========================================================
+           BADGES
+        ========================================================= */
+
+        .badge {
+            display: inline-block;
+
+            padding: 4px 8px;
+
+            border-radius: 6px;
+
+            font-size: 10px;
+
+            font-weight: 600;
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .badge:hover {
+            transform: scale(1.05);
+        }
+
+        .badge-high {
+            background: #FEF2F2;
+
+            color: var(--red);
+        }
+
+        .badge-medium {
+            background: #FFF7ED;
+
+            color: var(--orange);
+        }
+
+        .badge-low {
+            background: #F0FDF4;
+
+            color: var(--green);
+        }
+
+
+        /* =========================================================
+           TIMELINE
+        ========================================================= */
+
+        .timeline-summary {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 15px;
+
+            font-size: 12px;
+
+            color: var(--muted);
+        }
+
+        .timeline-count {
+            font-weight: 600;
+
+            color: var(--text);
+        }
+
+        .timeline-wrapper {
+            position: relative;
+
+            width: 100%;
+
+            height: 330px;
+
+            animation:
+                chartIn 0.8s ease-out 0.6s both;
+        }
+
+
+        /* =========================================================
+           LOADING
+        ========================================================= */
+
+        .loading {
+            color: #94A3B8;
+
+            font-size: 12px;
+
+            padding: 20px 0;
+        }
+
+
+        /* =========================================================
+           SCROLLBAR
+        ========================================================= */
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #F7F9FC;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8;
+        }
+
+
+        /* =========================================================
+           PRINT
+        ========================================================= */
+
+        @media print {
+
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .topbar-actions {
+                display: none;
+            }
+
+            body {
+                background: white;
+            }
+
+            .panel,
+            .summary-card {
+                box-shadow: none;
+            }
+
+            * {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+
+        @media(max-width: 1000px) {
+
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+
+        @media(max-width: 700px) {
+
+            .sidebar {
+                width: 170px;
+            }
+
+            .main {
+                margin-left: 170px;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .content {
+                padding: 18px;
+            }
+
+            .topbar {
+                padding: 0 16px;
+            }
+
+            .topbar-actions {
+                gap: 4px;
+            }
+
+            .action-btn {
+                padding: 7px 8px;
+            }
+
+            .live-status {
+                display: none;
+            }
+
+            .profile-section {
+                padding: 16px 12px;
+            }
+
+        }
+
+
+        /* =========================================================
+           REDUCE MOTION
+        ========================================================= */
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+
+                animation-duration: 0.01ms !important;
+
+                animation-iteration-count: 1 !important;
+
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================================================
+         SIDEBAR
+    ========================================================= -->
+
+    <aside class="sidebar">
+
+
+        <!-- PROFILE -->
+
+        <a
+            href="{{ url_for('profile') }}"
+            class="profile-section"
+        >
+
+            <div class="profile-avatar">
+
+                {{ session.get('user_name', 'U')[0].upper() }}
+
+            </div>
+
+
+            <div class="profile-info">
+
+                <div class="profile-name">
+
+                    {{ session.get('user_name', 'User') }}
+
+                </div>
+
+
+                <div class="profile-username">
+
+                    @{{ session.get('username', 'user') }}
+
+                </div>
+
+            </div>
+
+        </a>
+
+
+        <!-- NAVIGATION -->
+
+        <nav class="nav">
+
+
+            <a
+                href="/"
+                class="nav-item"
+            >
+                Dashboard
+            </a>
+
+
+            <a
+                href="/traffic"
+                class="nav-item"
+            >
+                Traffic Monitor
+            </a>
+
+
+            <a
+                href="/alerts"
+                class="nav-item"
+            >
+                Alerts
+            </a>
+
+
+            <a
+                href="/analysis"
+                class="nav-item"
+            >
+                Analysis
+            </a>
+
+
+            <!-- ACTIVE REPORTS -->
+
+            <a
+                href="/reports"
+                class="nav-item active"
+            >
+                Reports
+            </a>
+
+
+            <a
+                href="/logs"
+                class="nav-item"
+            >
+                Logs
+            </a>
+
+
+        </nav>
+
+
+        <!-- SIDEBAR BOTTOM -->
+
+        <div class="sidebar-bottom">
+
+
+            <a
+                href="{{ url_for('logout') }}"
+                class="logout-button"
+            >
+
+                <span>Logout</span>
+
+            </a>
+
+
+            <div class="system-card">
+
+                <div class="system-title">
+
+                    <span class="status-dot"></span>
+
+                    System Status
+
+                </div>
+
+
+                <div class="system-subtitle">
+
+                    All systems operational
+
+                </div>
+
+            </div>
+
+
+            <div class="version">
+
+                NIDS v1.0
+
+            </div>
+
+
+        </div>
+
+
+    </aside>
+
+
+    <!-- =========================================================
+         MAIN
+    ========================================================= -->
+
+    <main class="main">
+
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+
+            <div class="page-title">
+
+                Reports
+
+            </div>
+
+
+            <div class="topbar-actions">
+
+
+                <button
+                    class="action-btn"
+                    onclick="refreshReports(this)"
+                >
+
+                    ↻ Refresh
+
+                </button>
+
+
+                <button
+                    class="action-btn"
+                    onclick="exportReport()"
+                >
+
+                    ↓ Export
+
+                </button>
+
+
+                <button
+                    class="action-btn"
+                    onclick="printReport()"
+                >
+
+                    🖨 Print
+
+                </button>
+
+
+                <div class="live-status">
+
+                    <span class="live-dot"></span>
+
+                    Live Monitoring
+
+                </div>
+
+
+            </div>
+
+        </header>
+
+
+        <!-- =====================================================
+             CONTENT
+        ===================================================== -->
+
+        <section class="content">
+
+
+            <!-- EXECUTIVE SUMMARY -->
+
+            <div class="section-title">
+
+                Executive Summary
+
+            </div>
+
+
+            <div class="section-subtitle">
+
+                Overview of detected network security activity
+
+            </div>
+
+
+            <div class="summary-grid">
+
+
+                <div class="summary-card">
+
+                    <div class="summary-label">
+                        Total Traffic
+                    </div>
+
+                    <div
+                        class="summary-value"
+                        id="totalTraffic"
+                    >
+                        --
+                    </div>
+
+                    <div class="summary-extra">
+                        Monitored network traffic
+                    </div>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <div class="summary-label">
+                        Total Attacks
+                    </div>
+
+                    <div
+                        class="summary-value"
+                        id="totalAttacks"
+                    >
+                        --
+                    </div>
+
+                    <div class="summary-extra">
+                        Detected malicious events
+                    </div>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <div class="summary-label">
+                        Active Alerts
+                    </div>
+
+                    <div
+                        class="summary-value"
+                        id="activeAlerts"
+                    >
+                        --
+                    </div>
+
+                    <div class="summary-extra">
+                        Unresolved security alerts
+                    </div>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <div class="summary-label">
+                        Detection Rate
+                    </div>
+
+                    <div
+                        class="summary-value"
+                        id="detectionRate"
+                    >
+                        --
+                    </div>
+
+                    <div class="summary-extra">
+                        Attacks / total traffic
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- SECURITY FINDINGS -->
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div class="panel-title">
+                        Security Findings
+                    </div>
+
+                    <div class="panel-subtitle">
+                        Current security posture based on detected traffic
+                    </div>
+
+                </div>
+
+
+                <div class="two-column">
+
+
+                    <div>
+
+                        <table>
+
+                            <tr>
+
+                                <th>
+                                    Metric
+                                </th>
+
+                                <th>
+                                    Value
+                                </th>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>
+                                    Total Attacks
+                                </td>
+
+                                <td id="findingAttacks">
+                                    --
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>
+                                    High Severity
+                                </td>
+
+                                <td id="findingHigh">
+                                    --
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>
+                                    Medium Severity
+                                </td>
+
+                                <td id="findingMedium">
+                                    --
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>
+                                    Low Severity
+                                </td>
+
+                                <td id="findingLow">
+                                    --
+                                </td>
+
+                            </tr>
+
+                        </table>
+
+                    </div>
+
+
+                    <div>
+
+                        <table>
+
+                            <tr>
+
+                                <th>
+                                    Protocol
+                                </th>
+
+                                <th>
+                                    Traffic
+                                </th>
+
+                            </tr>
+
+
+                            <tbody id="protocolTable">
+
+                                <tr>
+
+                                    <td
+                                        colspan="2"
+                                        class="loading"
+                                    >
+                                        Loading...
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- ATTACK TIMELINE -->
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div class="panel-title">
+                        Attack Activity Timeline
+                    </div>
+
+                    <div class="panel-subtitle">
+                        Recent detected attacks and their activity over time
+                    </div>
+
+                </div>
+
+
+                <div class="timeline-summary">
+
+                    <span
+                        class="timeline-count"
+                        id="timelineCount"
+                    >
+                        Loading attack activity...
+                    </span>
+
+
+                    <span id="timelineRange">
+                        --
+                    </span>
+
+                </div>
+
+
+                <div class="timeline-wrapper">
+
+                    <canvas
+                        id="attackTimelineChart"
+                    ></canvas>
+
+                </div>
+
+            </div>
+
+
+            <!-- SOURCES + PORTS -->
+
+            <div class="two-column">
+
+
+                <!-- TOP SOURCES -->
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div class="panel-title">
+                            Top Attack Sources
+                        </div>
+
+                        <div class="panel-subtitle">
+                            Source IPs generating the most alerts
+                        </div>
+
+                    </div>
+
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Source IP
+                                </th>
+
+                                <th>
+                                    Attacks
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="sourceTable">
+
+                            <tr>
+
+                                <td
+                                    colspan="2"
+                                    class="loading"
+                                >
+                                    Loading...
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <!-- TARGETED PORTS -->
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div class="panel-title">
+                            Most Targeted Ports
+                        </div>
+
+                        <div class="panel-subtitle">
+                            Destination ports targeted by attacks
+                        </div>
+
+                    </div>
+
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Port
+                                </th>
+
+                                <th>
+                                    Attacks
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="portTable">
+
+                            <tr>
+
+                                <td
+                                    colspan="2"
+                                    class="loading"
+                                >
+                                    Loading...
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- RECENT INCIDENTS -->
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div class="panel-title">
+                        Recent Security Incidents
+                    </div>
+
+                    <div class="panel-subtitle">
+                        Latest detected attack events
+                    </div>
+
+                </div>
+
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Time</th>
+                            <th>Source</th>
+                            <th>Destination</th>
+                            <th>Protocol</th>
+                            <th>Severity</th>
+                            <th>Confidence</th>
+                            <th>Risk Score</th>
+                            <th>Status</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="recentIncidents">
+
+                        <tr>
+
+                            <td
+                                colspan="8"
+                                class="loading"
+                            >
+                                Loading...
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =========================================================
+         JAVASCRIPT
+    ========================================================= -->
+
+    <script>
+
+        let attackTimelineChart = null;
+
+
+        /* =====================================================
+           AUTHENTICATED FETCH
+        ===================================================== */
+
+        async function fetchJSON(url) {
+
+            const response = await fetch(url);
+
+            if (response.status === 401) {
+
+                window.location.href = "/login";
+
+                return null;
+            }
+
+            if (!response.ok) {
+
+                throw new Error(
+                    `HTTP ${response.status}`
+                );
+            }
+
+            return await response.json();
+        }
+
+
+        /* =====================================================
+           ANIMATED NUMBER
+        ===================================================== */
+
+        function animateNumber(element, newValue) {
+
+            if (!element) {
+                return;
+            }
+
+            const target = Number(newValue);
+
+            if (isNaN(target)) {
+
+                element.textContent = newValue;
+
+                return;
+            }
+
+            const current =
+                Number(
+                    element.dataset.value || 0
+                );
+
+            if (current === target) {
+
+                element.textContent = target;
+
+                return;
+            }
+
+            const duration = 500;
+
+            const startTime =
+                performance.now();
+
+
+            function updateNumber(currentTime) {
+
+                const progress =
+                    Math.min(
+                        (currentTime - startTime) /
+                        duration,
+                        1
+                    );
+
+
+                const eased =
+                    1 -
+                    Math.pow(
+                        1 - progress,
+                        3
+                    );
+
+
+                const value =
+                    Math.round(
+                        current +
+                        (target - current) *
+                        eased
+                    );
+
+
+                element.textContent = value;
+
+
+                if (progress < 1) {
+
+                    requestAnimationFrame(
+                        updateNumber
+                    );
+
+                }
+
+                else {
+
+                    element.textContent =
+                        target;
+
+                    element.dataset.value =
+                        target;
+                }
+            }
+
+
+            requestAnimationFrame(
+                updateNumber
+            );
+        }
+
+
+        /* =====================================================
+           DASHBOARD
+        ===================================================== */
+
+        async function loadDashboard() {
+
+            try {
+
+                const data =
+                    await fetchJSON(
+                        "/api/dashboard"
+                    );
+
+
+                if (!data) {
+                    return;
+                }
+
+
+                animateNumber(
+                    document.getElementById(
+                        "totalTraffic"
+                    ),
+                    data.total_traffic ?? 0
+                );
+
+
+                animateNumber(
+                    document.getElementById(
+                        "totalAttacks"
+                    ),
+                    data.total_attacks ?? 0
+                );
+
+
+                animateNumber(
+                    document.getElementById(
+                        "activeAlerts"
+                    ),
+                    data.active_alerts ?? 0
+                );
+
+
+                document.getElementById(
+                    "detectionRate"
+                ).textContent =
+                    (data.attack_percentage ?? 0)
+                    + "%";
+
+
+                animateNumber(
+                    document.getElementById(
+                        "findingAttacks"
+                    ),
+                    data.total_attacks ?? 0
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Dashboard error:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        /* =====================================================
+           REPORTS
+        ===================================================== */
+
+        async function loadReport() {
+
+            try {
+
+                const data =
+                    await fetchJSON(
+                        "/api/reports"
+                    );
+
+
+                if (!data) {
+                    return;
+                }
+
+
+                /* ================= SEVERITY ================= */
+
+                const severity =
+                    data.severity || {};
+
+
+                animateNumber(
+                    document.getElementById(
+                        "findingHigh"
+                    ),
+                    severity.high ?? 0
+                );
+
+
+                animateNumber(
+                    document.getElementById(
+                        "findingMedium"
+                    ),
+                    severity.medium ?? 0
+                );
+
+
+                animateNumber(
+                    document.getElementById(
+                        "findingLow"
+                    ),
+                    severity.low ?? 0
+                );
+
+
+                /* ================= PROTOCOLS ================= */
+
+                const protocolTable =
+                    document.getElementById(
+                        "protocolTable"
+                    );
+
+
+                const protocols =
+                    data.protocols || {};
+
+
+                const protocolEntries =
+                    Object.entries(protocols);
+
+
+                if (
+                    protocolEntries.length === 0
+                ) {
+
+                    protocolTable.innerHTML = `
+                        <tr>
+                            <td
+                                colspan="2"
+                                class="loading"
+                            >
+                                No protocol data available
+                            </td>
+                        </tr>
+                    `;
+
+                }
+
+                else {
+
+                    protocolTable.innerHTML =
+                        protocolEntries
+                            .map(
+                                ([protocol, count], index) => `
+
+                                    <tr
+                                        style="
+                                            animation-delay:
+                                            ${index * 0.06}s;
+                                        "
+                                    >
+
+                                        <td>
+                                            ${protocol}
+                                        </td>
+
+                                        <td>
+                                            ${count}
+                                        </td>
+
+                                    </tr>
+
+                                `
+                            )
+                            .join("");
+
+                }
+
+
+                /* ================= TOP SOURCES ================= */
+
+                const sourceTable =
+                    document.getElementById(
+                        "sourceTable"
+                    );
+
+
+                const sources =
+                    data.top_sources || [];
+
+
+                if (
+                    sources.length === 0
+                ) {
+
+                    sourceTable.innerHTML = `
+                        <tr>
+                            <td
+                                colspan="2"
+                                class="loading"
+                            >
+                                No source data available
+                            </td>
+                        </tr>
+                    `;
+
+                }
+
+                else {
+
+                    sourceTable.innerHTML =
+                        sources
+                            .map(
+                                (item, index) => `
+
+                                    <tr
+                                        style="
+                                            animation-delay:
+                                            ${index * 0.06}s;
+                                        "
+                                    >
+
+                                        <td>
+                                            ${item.ip || "Unknown"}
+                                        </td>
+
+                                        <td>
+                                            ${item.count || 0}
+                                        </td>
+
+                                    </tr>
+
+                                `
+                            )
+                            .join("");
+
+                }
+
+
+                /* ================= PORTS ================= */
+
+                const portTable =
+                    document.getElementById(
+                        "portTable"
+                    );
+
+
+                const ports =
+                    data.top_ports || [];
+
+
+                if (
+                    ports.length === 0
+                ) {
+
+                    portTable.innerHTML = `
+                        <tr>
+                            <td
+                                colspan="2"
+                                class="loading"
+                            >
+                                No port data available
+                            </td>
+                        </tr>
+                    `;
+
+                }
+
+                else {
+
+                    portTable.innerHTML =
+                        ports
+                            .map(
+                                (item, index) => `
+
+                                    <tr
+                                        style="
+                                            animation-delay:
+                                            ${index * 0.06}s;
+                                        "
+                                    >
+
+                                        <td>
+                                            ${item.port ?? "Unknown"}
+                                        </td>
+
+                                        <td>
+                                            ${item.count || 0}
+                                        </td>
+
+                                    </tr>
+
+                                `
+                            )
+                            .join("");
+
+                }
+
+
+                /* ================= RECENT INCIDENTS ================= */
+
+                const incidentTable =
+                    document.getElementById(
+                        "recentIncidents"
+                    );
+
+
+                const incidents =
+                    data.recent_attacks || [];
+
+
+                if (
+                    incidents.length === 0
+                ) {
+
+                    incidentTable.innerHTML = `
+                        <tr>
+                            <td
+                                colspan="8"
+                                class="loading"
+                            >
+                                No recent incidents
+                            </td>
+                        </tr>
+                    `;
+
+                }
+
+                else {
+
+                    incidentTable.innerHTML =
+                        incidents
+                            .map(
+                                (item, index) => {
+
+                                    let badgeClass =
+                                        "badge-low";
+
+
+                                    if (
+                                        item.severity ===
+                                        "High"
+                                    ) {
+
+                                        badgeClass =
+                                            "badge-high";
+
+                                    }
+
+                                    else if (
+                                        item.severity ===
+                                        "Medium"
+                                    ) {
+
+                                        badgeClass =
+                                            "badge-medium";
+                                    }
+
+
+                                    return `
+
+                                        <tr
+                                            style="
+                                                animation-delay:
+                                                ${index * 0.06}s;
+                                            "
+                                        >
+
+                                            <td>
+                                                ${item.timestamp || "--"}
+                                            </td>
+
+                                            <td>
+                                                ${item.source_ip || "--"}
+                                            </td>
+
+                                            <td>
+                                                ${item.destination_ip || "--"}
+                                            </td>
+
+                                            <td>
+                                                ${item.protocol || "--"}
+                                            </td>
+
+                                            <td>
+
+                                                <span
+                                                    class="badge ${badgeClass}"
+                                                >
+
+                                                    ${item.severity || "--"}
+
+                                                </span>
+
+                                            </td>
+
+                                            <td>
+                                                ${Number(
+                                                    item.confidence || 0
+                                                ).toFixed(2)}%
+                                            </td>
+
+                                            <td>
+                                                ${Number(
+                                                    item.risk_score || 0
+                                                ).toFixed(2)}
+                                            </td>
+
+                                            <td>
+                                                ${item.status || "--"}
+                                            </td>
+
+                                        </tr>
+
+                                    `;
+
+                                }
+                            )
+                            .join("");
+
+                }
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Reports API error:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        /* =====================================================
+           ATTACK TIMELINE
+        ===================================================== */
+
+        async function loadAttackTimeline() {
+
+            try {
+
+                const alerts =
+                    await fetchJSON(
+                        "/api/alerts"
+                    );
+
+
+                if (!alerts) {
+                    return;
+                }
+
+
+                const countElement =
+                    document.getElementById(
+                        "timelineCount"
+                    );
+
+
+                const rangeElement =
+                    document.getElementById(
+                        "timelineRange"
+                    );
+
+
+                if (
+                    !Array.isArray(alerts) ||
+                    alerts.length === 0
+                ) {
+
+                    countElement.textContent =
+                        "No attack events detected";
+
+
+                    rangeElement.textContent =
+                        "--";
+
+
+                    if (attackTimelineChart) {
+
+                        attackTimelineChart.destroy();
+
+                        attackTimelineChart =
+                            null;
+                    }
+
+                    return;
+                }
+
+
+                /* Oldest → newest */
+
+                const sortedAlerts =
+                    [...alerts].sort(
+                        (a, b) =>
+                            new Date(a.timestamp) -
+                            new Date(b.timestamp)
+                    );
+
+
+                const labels =
+                    sortedAlerts.map(
+                        alert => {
+
+                            const date =
+                                new Date(
+                                    alert.timestamp
+                                );
+
+
+                            return date.toLocaleTimeString(
+                                [],
+                                {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    second: "2-digit"
+                                }
+                            );
+
+                        }
+                    );
+
+
+                /* Cumulative attacks */
+
+                const attackCounts =
+                    sortedAlerts.map(
+                        (_, index) =>
+                            index + 1
+                    );
+
+
+                countElement.textContent =
+                    `${sortedAlerts.length} recent attack events`;
+
+
+                const firstDate =
+                    new Date(
+                        sortedAlerts[0].timestamp
+                    );
+
+
+                const lastDate =
+                    new Date(
+                        sortedAlerts[
+                            sortedAlerts.length - 1
+                        ].timestamp
+                    );
+
+
+                rangeElement.textContent =
+                    `${firstDate.toLocaleString()} → ${lastDate.toLocaleString()}`;
+
+
+                if (attackTimelineChart) {
+
+                    attackTimelineChart.destroy();
+                }
+
+
+                const canvas =
+                    document.getElementById(
+                        "attackTimelineChart"
+                    );
+
+
+                attackTimelineChart =
+                    new Chart(
+                        canvas,
+                        {
+
+                            type: "line",
+
+                            data: {
+
+                                labels: labels,
+
+                                datasets: [
+
+                                    {
+
+                                        label:
+                                            "Attacks",
+
+                                        data:
+                                            attackCounts,
+
+                                        borderColor:
+                                            "#2563EB",
+
+                                        backgroundColor:
+                                            "rgba(37,99,235,0.08)",
+
+                                        fill: true,
+
+                                        tension: 0.35,
+
+                                        borderWidth: 2,
+
+                                        pointRadius: 5,
+
+                                        pointHoverRadius: 7,
+
+                                        pointBackgroundColor:
+                                            sortedAlerts.map(
+                                                alert => {
+
+                                                    if (
+                                                        alert.severity ===
+                                                        "High"
+                                                    ) {
+
+                                                        return "#DC2626";
+                                                    }
+
+                                                    if (
+                                                        alert.severity ===
+                                                        "Medium"
+                                                    ) {
+
+                                                        return "#EA580C";
+                                                    }
+
+                                                    return "#16A34A";
+
+                                                }
+                                            ),
+
+                                        pointBorderColor:
+                                            "#FFFFFF",
+
+                                        pointBorderWidth: 2
+
+                                    }
+
+                                ]
+
+                            },
+
+
+                            options: {
+
+                                responsive: true,
+
+                                maintainAspectRatio:
+                                    false,
+
+
+                                animation: {
+
+                                    duration: 900,
+
+                                    easing:
+                                        "easeOutQuart"
+                                },
+
+
+                                plugins: {
+
+                                    legend: {
+                                        display: false
+                                    },
+
+
+                                    tooltip: {
+
+                                        callbacks: {
+
+                                            title:
+                                                function(
+                                                    context
+                                                ) {
+
+                                                    const index =
+                                                        context[0]
+                                                            .dataIndex;
+
+
+                                                    return (
+                                                        "Alert #" +
+                                                        sortedAlerts[
+                                                            index
+                                                        ].id
+                                                    );
+
+                                                },
+
+
+                                            label:
+                                                function(
+                                                    context
+                                                ) {
+
+                                                    return (
+                                                        "Attack count: " +
+                                                        context.raw
+                                                    );
+
+                                                },
+
+
+                                            afterLabel:
+                                                function(
+                                                    context
+                                                ) {
+
+                                                    const alert =
+                                                        sortedAlerts[
+                                                            context
+                                                                .dataIndex
+                                                        ];
+
+
+                                                    return [
+
+                                                        `Source: ${alert.source_ip || "--"}`,
+
+                                                        `Destination: ${alert.destination_ip || "--"}`,
+
+                                                        `Protocol: ${alert.protocol || "--"}`,
+
+                                                        `Severity: ${alert.severity || "--"}`,
+
+                                                        `Confidence: ${Number(
+                                                            alert.confidence || 0
+                                                        ).toFixed(2)}%`,
+
+                                                        `Risk Score: ${Number(
+                                                            alert.risk_score || 0
+                                                        ).toFixed(2)}`
+
+                                                    ];
+
+                                                }
+
+                                        }
+
+                                    }
+
+                                },
+
+
+                                scales: {
+
+                                    x: {
+
+                                        grid: {
+                                            color:
+                                                "#EEF2F7"
+                                        },
+
+                                        ticks: {
+
+                                            color:
+                                                "#64748B",
+
+                                            font: {
+                                                size: 10
+                                            },
+
+                                            maxRotation: 45
+                                        },
+
+                                        title: {
+
+                                            display: true,
+
+                                            text:
+                                                "Attack Time",
+
+                                            color:
+                                                "#64748B",
+
+                                            font: {
+                                                size: 11,
+                                                weight: "600"
+                                            }
+
+                                        }
+
+                                    },
+
+
+                                    y: {
+
+                                        beginAtZero: true,
+
+                                        ticks: {
+
+                                            stepSize: 1,
+
+                                            color:
+                                                "#64748B",
+
+                                            font: {
+                                                size: 10
+                                            }
+
+                                        },
+
+                                        grid: {
+
+                                            color:
+                                                "#EEF2F7"
+
+                                        },
+
+                                        title: {
+
+                                            display: true,
+
+                                            text:
+                                                "Cumulative Attacks",
+
+                                            color:
+                                                "#64748B",
+
+                                            font: {
+                                                size: 11,
+                                                weight: "600"
+                                            }
+
+                                        }
+
+                                    }
+
+                                }
+
+                            }
+
+                        }
+                    );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Timeline error:",
+                    error
+                );
+
+
+                document.getElementById(
+                    "timelineCount"
+                ).textContent =
+                    "Unable to load attack activity";
+
+            }
+
+        }
+
+
+        /* =====================================================
+           REFRESH
+        ===================================================== */
+
+        async function refreshReports(button) {
+
+            if (!button) {
+                return;
+            }
+
+
+            const oldText =
+                button.innerHTML;
+
+
+            button.innerHTML =
+                "↻ Refreshing...";
+
+
+            button.disabled = true;
+
+
+            try {
+
+                await Promise.all([
+
+                    loadDashboard(),
+
+                    loadReport(),
+
+                    loadAttackTimeline()
+
+                ]);
+
+            }
+
+            finally {
+
+                button.innerHTML =
+                    oldText;
+
+                button.disabled =
+                    false;
+
+            }
+
+        }
+
+
+        /* =====================================================
+           EXPORT CSV
+        ===================================================== */
+
+        async function exportReport() {
+
+            try {
+
+                const data =
+                    await fetchJSON(
+                        "/api/reports"
+                    );
+
+
+                if (!data) {
+                    return;
+                }
+
+
+                const rows = [];
+
+
+                rows.push([
+
+                    "Time",
+
+                    "Source IP",
+
+                    "Destination IP",
+
+                    "Protocol",
+
+                    "Severity",
+
+                    "Confidence",
+
+                    "Risk Score",
+
+                    "Status"
+
+                ]);
+
+
+                const incidents =
+                    data.recent_attacks || [];
+
+
+                incidents.forEach(
+                    item => {
+
+                        rows.push([
+
+                            item.timestamp || "",
+
+                            item.source_ip || "",
+
+                            item.destination_ip || "",
+
+                            item.protocol || "",
+
+                            item.severity || "",
+
+                            item.confidence ?? "",
+
+                            item.risk_score ?? "",
+
+                            item.status || ""
+
+                        ]);
+
+                    }
+                );
+
+
+                const csv =
+                    rows
+                        .map(
+                            row =>
+                                row
+                                    .map(
+                                        value =>
+                                            `"${String(
+                                                value
+                                            ).replace(
+                                                /"/g,
+                                                '""'
+                                            )}"`
+                                    )
+                                    .join(",")
+                        )
+                        .join("\n");
+
+
+                const blob =
+                    new Blob(
+                        [csv],
+                        {
+                            type:
+                                "text/csv;charset=utf-8;"
+                        }
+                    );
+
+
+                const url =
+                    URL.createObjectURL(
+                        blob
+                    );
+
+
+                const link =
+                    document.createElement(
+                        "a"
+                    );
+
+
+                link.href =
+                    url;
+
+
+                link.download =
+                    "nids_security_report.csv";
+
+
+                document.body.appendChild(
+                    link
+                );
+
+
+                link.click();
+
+
+                document.body.removeChild(
+                    link
+                );
+
+
+                URL.revokeObjectURL(
+                    url
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Export error:",
+                    error
+                );
+
+
+                alert(
+                    "Unable to export report."
+                );
+
+            }
+
+        }
+
+
+        /* =====================================================
+           PRINT
+        ===================================================== */
+
+        function printReport() {
+
+            window.print();
+
+        }
+
+
+        /* =====================================================
+           INITIAL LOAD
+        ===================================================== */
+
+        async function loadAllReports() {
+
+            await Promise.all([
+
+                loadDashboard(),
+
+                loadReport(),
+
+                loadAttackTimeline()
+
+            ]);
+
+        }
+
+
+        loadAllReports();
+
+
+        /* =====================================================
+           AUTO REFRESH EVERY 10 SECONDS
+        ===================================================== */
+
+        setInterval(
+            loadAllReports,
+            10000
+        );
+
+    </script>
+
+
+</body>
+
+</html>

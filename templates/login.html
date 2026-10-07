@@ -1,0 +1,1607 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>NIDS | Login</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #F7F9FC;
+            --white: #FFFFFF;
+            --blue: #2563EB;
+            --blue-light: #EFF6FF;
+            --blue-soft: #E8F0FE;
+            --text: #172033;
+            --muted: #64748B;
+            --border: #E7ECF3;
+            --green: #16A34A;
+            --purple: #7C3AED;
+        }
+
+
+        /* =========================================
+           BODY
+        ========================================= */
+
+        body {
+
+            font-family: "Inter", sans-serif;
+
+            min-height: 100vh;
+
+            background:
+                radial-gradient(
+                    circle at 8% 15%,
+                    rgba(37, 99, 235, 0.08),
+                    transparent 25%
+                ),
+                radial-gradient(
+                    circle at 92% 85%,
+                    rgba(124, 58, 237, 0.06),
+                    transparent 25%
+                ),
+                var(--bg);
+
+            color: var(--text);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            overflow: hidden;
+        }
+
+
+        /* =========================================
+           BACKGROUND DECORATION
+        ========================================= */
+
+        .background-circle {
+
+            position: fixed;
+
+            border-radius: 50%;
+
+            pointer-events: none;
+
+            z-index: 0;
+        }
+
+        .circle-one {
+
+            width: 280px;
+            height: 280px;
+
+            top: -140px;
+            left: -100px;
+
+            background: rgba(37, 99, 235, 0.05);
+
+            animation: floatOne 8s ease-in-out infinite;
+        }
+
+        .circle-two {
+
+            width: 330px;
+            height: 330px;
+
+            right: -160px;
+            bottom: -150px;
+
+            background: rgba(124, 58, 237, 0.05);
+
+            animation: floatTwo 9s ease-in-out infinite;
+        }
+
+        @keyframes floatOne {
+
+            0%, 100% {
+                transform: translate(0, 0);
+            }
+
+            50% {
+                transform: translate(25px, 20px);
+            }
+
+        }
+
+        @keyframes floatTwo {
+
+            0%, 100% {
+                transform: translate(0, 0);
+            }
+
+            50% {
+                transform: translate(-20px, -20px);
+            }
+
+        }
+
+
+        /* =========================================
+           MAIN LOGIN CARD
+        ========================================= */
+
+        .login-container {
+
+            width: 100%;
+
+            max-width: 1050px;
+
+            min-height: 610px;
+
+            margin: 30px;
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            background: var(--white);
+
+            border: 1px solid var(--border);
+
+            border-radius: 20px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 20px 55px rgba(15, 23, 42, 0.08),
+                0 3px 10px rgba(15, 23, 42, 0.025);
+
+            position: relative;
+
+            z-index: 2;
+
+            animation: containerIn 0.65s ease-out;
+        }
+
+        @keyframes containerIn {
+
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+
+        }
+
+
+        /* =========================================
+           LEFT PANEL
+        ========================================= */
+
+        .left-panel {
+
+            position: relative;
+
+            padding: 48px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #F8FBFF 0%,
+                    #F3F7FF 55%,
+                    #F8F6FF 100%
+                );
+
+            border-right: 1px solid var(--border);
+
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: space-between;
+
+            overflow: hidden;
+        }
+
+
+        /* SUBTLE GRID */
+
+        .left-panel::before {
+
+            content: "";
+
+            position: absolute;
+
+            inset: 0;
+
+            background-image:
+                linear-gradient(
+                    rgba(37, 99, 235, 0.035) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(37, 99, 235, 0.035) 1px,
+                    transparent 1px
+                );
+
+            background-size: 35px 35px;
+
+            mask-image:
+                linear-gradient(
+                    to bottom,
+                    transparent,
+                    black 20%,
+                    black 80%,
+                    transparent
+                );
+
+            pointer-events: none;
+        }
+
+
+        /* =========================================
+           BRAND
+        ========================================= */
+
+        .brand {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 11px;
+
+            position: relative;
+
+            z-index: 2;
+        }
+
+        .brand-icon {
+
+            width: 43px;
+            height: 43px;
+
+            border-radius: 11px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background: var(--blue);
+
+            color: white;
+
+            font-size: 19px;
+
+            box-shadow:
+                0 7px 18px rgba(37, 99, 235, 0.20);
+
+            animation: iconFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes iconFloat {
+
+            0%, 100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-3px);
+            }
+
+        }
+
+        .brand-name {
+
+            font-size: 17px;
+
+            font-weight: 800;
+
+            color: var(--text);
+
+            letter-spacing: -0.3px;
+        }
+
+        .brand-subtitle {
+
+            margin-top: 3px;
+
+            color: var(--muted);
+
+            font-size: 9px;
+
+            font-weight: 600;
+
+            letter-spacing: 1.1px;
+        }
+
+
+        /* =========================================
+           LEFT MAIN CONTENT
+        ========================================= */
+
+        .left-content {
+
+            position: relative;
+
+            z-index: 2;
+
+            margin-top: auto;
+
+            margin-bottom: auto;
+        }
+
+
+        /* SYSTEM BADGE */
+
+        .status-badge {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            padding: 7px 11px;
+
+            border-radius: 20px;
+
+            background: white;
+
+            border: 1px solid #DCE8FA;
+
+            color: var(--blue);
+
+            font-size: 10px;
+
+            font-weight: 700;
+
+            box-shadow:
+                0 3px 10px rgba(37, 99, 235, 0.05);
+        }
+
+        .status-dot {
+
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: #22C55E;
+
+            animation: statusPulse 1.8s infinite;
+        }
+
+        @keyframes statusPulse {
+
+            0% {
+                box-shadow:
+                    0 0 0 0 rgba(34, 197, 94, 0.35);
+            }
+
+            70% {
+                box-shadow:
+                    0 0 0 6px rgba(34, 197, 94, 0);
+            }
+
+            100% {
+                box-shadow:
+                    0 0 0 0 rgba(34, 197, 94, 0);
+            }
+
+        }
+
+
+        /* HEADING */
+
+        .left-content h1 {
+
+            margin-top: 22px;
+
+            max-width: 440px;
+
+            font-size: 39px;
+
+            line-height: 1.12;
+
+            letter-spacing: -1.4px;
+
+            font-weight: 800;
+        }
+
+        .gradient-text {
+
+            background:
+                linear-gradient(
+                    100deg,
+                    #2563EB,
+                    #4F46E5,
+                    #7C3AED
+                );
+
+            -webkit-background-clip: text;
+
+            -webkit-text-fill-color: transparent;
+        }
+
+
+        /* DESCRIPTION */
+
+        .left-content p {
+
+            margin-top: 17px;
+
+            max-width: 390px;
+
+            color: var(--muted);
+
+            font-size: 13px;
+
+            line-height: 1.75;
+        }
+
+
+        /* =========================================
+           FEATURES
+        ========================================= */
+
+        .feature-list {
+
+            margin-top: 28px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 12px;
+        }
+
+        .feature {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            color: #475569;
+
+            font-size: 11px;
+
+            font-weight: 500;
+
+            animation: featureIn 0.6s ease-out both;
+        }
+
+        .feature:nth-child(1) {
+            animation-delay: 0.25s;
+        }
+
+        .feature:nth-child(2) {
+            animation-delay: 0.35s;
+        }
+
+        .feature:nth-child(3) {
+            animation-delay: 0.45s;
+        }
+
+        @keyframes featureIn {
+
+            from {
+                opacity: 0;
+                transform: translateX(-8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+        }
+
+        .feature-icon {
+
+            width: 26px;
+            height: 26px;
+
+            border-radius: 7px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background: white;
+
+            border: 1px solid var(--border);
+
+            color: var(--blue);
+
+            font-size: 11px;
+
+            box-shadow:
+                0 2px 7px rgba(15, 23, 42, 0.03);
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .feature:hover .feature-icon {
+
+            transform: translateX(3px);
+
+            box-shadow:
+                0 4px 10px rgba(37, 99, 235, 0.10);
+        }
+
+
+        /* =========================================
+           NETWORK ORBIT
+        ========================================= */
+
+        .orbit {
+
+            position: absolute;
+
+            right: 38px;
+
+            bottom: 95px;
+
+            width: 150px;
+
+            height: 150px;
+
+            opacity: 0.75;
+        }
+
+        .orbit-ring {
+
+            position: absolute;
+
+            border-radius: 50%;
+
+            border: 1px solid rgba(37, 99, 235, 0.12);
+        }
+
+        .ring-one {
+
+            inset: 15px;
+
+            animation:
+                spin 15s linear infinite;
+        }
+
+        .ring-two {
+
+            inset: 35px;
+
+            border-style: dashed;
+
+            animation:
+                spinReverse 10s linear infinite;
+        }
+
+        @keyframes spin {
+
+            to {
+                transform: rotate(360deg);
+            }
+
+        }
+
+        @keyframes spinReverse {
+
+            to {
+                transform: rotate(-360deg);
+            }
+
+        }
+
+        .orbit-center {
+
+            position: absolute;
+
+            width: 42px;
+            height: 42px;
+
+            top: 54px;
+            left: 54px;
+
+            border-radius: 50%;
+
+            background: white;
+
+            border: 1px solid #DCE8FA;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            color: var(--blue);
+
+            font-size: 17px;
+
+            box-shadow:
+                0 7px 20px rgba(37, 99, 235, 0.12);
+        }
+
+        .orbit-node {
+
+            position: absolute;
+
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: var(--blue);
+
+            box-shadow:
+                0 0 0 4px rgba(37, 99, 235, 0.08);
+        }
+
+        .node-one {
+
+            top: 6px;
+            left: 72px;
+        }
+
+        .node-two {
+
+            right: 5px;
+            top: 72px;
+        }
+
+        .node-three {
+
+            bottom: 7px;
+            left: 72px;
+        }
+
+        .node-four {
+
+            left: 5px;
+            top: 72px;
+        }
+
+
+        /* =========================================
+           SYSTEM FOOTER
+        ========================================= */
+
+        .system-footer {
+
+            position: relative;
+
+            z-index: 2;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            color: #94A3B8;
+
+            font-size: 10px;
+        }
+
+        .system-footer-dot {
+
+            width: 6px;
+            height: 6px;
+
+            border-radius: 50%;
+
+            background: #22C55E;
+        }
+
+
+        /* =========================================
+           RIGHT PANEL
+        ========================================= */
+
+        .right-panel {
+
+            padding: 65px 75px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: center;
+
+            background: white;
+        }
+
+
+        /* =========================================
+           LOGIN HEADER
+        ========================================= */
+
+        .login-header {
+
+            margin-bottom: 32px;
+        }
+
+        .login-header h2 {
+
+            font-size: 31px;
+
+            font-weight: 800;
+
+            letter-spacing: -0.8px;
+
+            color: var(--text);
+        }
+
+        .login-header p {
+
+            margin-top: 8px;
+
+            color: var(--muted);
+
+            font-size: 13px;
+
+            line-height: 1.65;
+        }
+
+
+        /* =========================================
+           ERROR MESSAGE
+        ========================================= */
+
+        .error-message {
+
+            margin-bottom: 20px;
+
+            padding: 12px 14px;
+
+            border-radius: 9px;
+
+            background: #FEF2F2;
+
+            border: 1px solid #FECACA;
+
+            color: #DC2626;
+
+            font-size: 11px;
+
+            animation: errorIn 0.35s ease-out;
+        }
+
+        @keyframes errorIn {
+
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+        }
+
+
+        /* =========================================
+           FORM
+        ========================================= */
+
+        .form-group {
+
+            margin-bottom: 21px;
+        }
+
+        .form-label {
+
+            display: block;
+
+            margin-bottom: 8px;
+
+            font-size: 12px;
+
+            font-weight: 600;
+
+            color: #334155;
+        }
+
+        .input-wrapper {
+
+            position: relative;
+        }
+
+        .input-icon {
+
+            position: absolute;
+
+            left: 15px;
+
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            color: #94A3B8;
+
+            font-size: 14px;
+
+            transition:
+                color 0.2s ease;
+        }
+
+        .form-input {
+
+            width: 100%;
+
+            height: 51px;
+
+            padding: 0 45px;
+
+            border-radius: 10px;
+
+            border: 1px solid var(--border);
+
+            background: #FAFBFD;
+
+            color: var(--text);
+
+            font-family: inherit;
+
+            font-size: 13px;
+
+            outline: none;
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease,
+                background 0.2s ease;
+        }
+
+        .form-input:hover {
+
+            border-color: #CBD5E1;
+        }
+
+        .form-input:focus {
+
+            background: white;
+
+            border-color: #93C5FD;
+
+            box-shadow:
+                0 0 0 3px rgba(37, 99, 235, 0.08);
+        }
+
+        .input-wrapper:focus-within .input-icon {
+
+            color: var(--blue);
+        }
+
+        .form-input::placeholder {
+
+            color: #A0AEC0;
+        }
+
+
+        /* =========================================
+           PASSWORD TOGGLE
+        ========================================= */
+
+        .password-toggle {
+
+            position: absolute;
+
+            right: 14px;
+
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            border: none;
+
+            background: transparent;
+
+            color: #64748B;
+
+            cursor: pointer;
+
+            font-family: inherit;
+
+            font-size: 10px;
+
+            font-weight: 600;
+
+            transition:
+                color 0.2s ease;
+        }
+
+        .password-toggle:hover {
+
+            color: var(--blue);
+        }
+
+
+        /* =========================================
+           FORGOT PASSWORD
+        ========================================= */
+
+        .form-options {
+
+            display: flex;
+
+            justify-content: flex-end;
+
+            margin-top: -2px;
+
+            margin-bottom: 23px;
+        }
+
+        .forgot {
+
+            color: var(--blue);
+
+            text-decoration: none;
+
+            font-size: 11px;
+
+            font-weight: 600;
+
+            transition:
+                color 0.2s ease;
+        }
+
+        .forgot:hover {
+
+            color: var(--purple);
+        }
+
+
+        /* =========================================
+           LOGIN BUTTON
+        ========================================= */
+
+        .login-button {
+
+            width: 100%;
+
+            height: 51px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background:
+                linear-gradient(
+                    100deg,
+                    #2563EB,
+                    #3B82F6
+                );
+
+            color: white;
+
+            font-family: inherit;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            position: relative;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 8px 18px rgba(37, 99, 235, 0.20);
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .login-button::before {
+
+            content: "";
+
+            position: absolute;
+
+            top: 0;
+
+            left: -100%;
+
+            width: 70%;
+
+            height: 100%;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(255,255,255,0.22),
+                    transparent
+                );
+
+            transform: skewX(-20deg);
+
+            transition:
+                left 0.55s ease;
+        }
+
+        .login-button:hover {
+
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 11px 24px rgba(37, 99, 235, 0.27);
+        }
+
+        .login-button:hover::before {
+
+            left: 140%;
+        }
+
+        .login-button:active {
+
+            transform: scale(0.98);
+        }
+
+
+        /* =========================================
+           SIGNUP
+        ========================================= */
+
+        .signup {
+
+            margin-top: 25px;
+
+            text-align: center;
+
+            color: #94A3B8;
+
+            font-size: 11px;
+        }
+
+        .signup a {
+
+            margin-left: 4px;
+
+            color: var(--blue);
+
+            text-decoration: none;
+
+            font-weight: 700;
+
+            transition:
+                color 0.2s ease;
+        }
+
+        .signup a:hover {
+
+            color: var(--purple);
+        }
+
+
+        /* =========================================
+           SECURITY NOTE
+        ========================================= */
+
+        .security-note {
+
+            margin-top: 28px;
+
+            padding-top: 18px;
+
+            border-top: 1px solid #EEF2F7;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 7px;
+
+            color: #94A3B8;
+
+            font-size: 9px;
+        }
+
+        .security-note span {
+
+            color: var(--green);
+        }
+
+
+        /* =========================================
+           RESPONSIVE
+        ========================================= */
+
+        @media (max-width: 850px) {
+
+            body {
+                overflow: auto;
+            }
+
+            .login-container {
+
+                grid-template-columns: 1fr;
+
+                max-width: 480px;
+
+                min-height: auto;
+            }
+
+            .left-panel {
+
+                min-height: 290px;
+
+                padding: 32px;
+            }
+
+            .left-content h1 {
+
+                font-size: 30px;
+            }
+
+            .feature-list,
+            .orbit {
+
+                display: none;
+            }
+
+            .right-panel {
+
+                padding: 45px 35px;
+            }
+        }
+
+
+        @media (max-width: 500px) {
+
+            .login-container {
+
+                margin: 15px;
+
+                border-radius: 15px;
+            }
+
+            .left-panel {
+
+                padding: 28px;
+            }
+
+            .right-panel {
+
+                padding: 38px 25px;
+            }
+
+            .login-header h2 {
+
+                font-size: 27px;
+            }
+        }
+
+
+        /* =========================================
+           REDUCED MOTION
+        ========================================= */
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+
+                animation-duration: 0.01ms !important;
+
+                animation-iteration-count: 1 !important;
+
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- BACKGROUND -->
+
+    <div class="background-circle circle-one"></div>
+    <div class="background-circle circle-two"></div>
+
+
+
+    <!-- LOGIN CONTAINER -->
+
+    <div class="login-container">
+
+
+        <!-- =====================================
+             LEFT SIDE
+        ====================================== -->
+
+        <section class="left-panel">
+
+
+            <!-- BRAND -->
+
+            <div class="brand">
+
+                <div class="brand-icon">
+                    🛡
+                </div>
+
+                <div>
+
+                    <div class="brand-name">
+                        NIDS
+                    </div>
+
+                    <div class="brand-subtitle">
+                        NETWORK INTRUSION DETECTION
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- CONTENT -->
+
+            <div class="left-content">
+
+
+                <!-- STATUS -->
+
+                <div class="status-badge">
+
+                    <span class="status-dot"></span>
+
+                    SYSTEM ONLINE
+
+                </div>
+
+
+
+                <!-- HEADING -->
+
+                <h1>
+
+                    Smarter security.
+                    <br>
+
+                    <span class="gradient-text">
+                        Safer networks.
+                    </span>
+
+                </h1>
+
+
+
+                <!-- DESCRIPTION -->
+
+                <p>
+
+                    Monitor network activity, detect suspicious
+                    behavior and stay ahead of potential threats
+                    with intelligent intrusion detection.
+
+                </p>
+
+
+
+                <!-- FEATURES -->
+
+                <div class="feature-list">
+
+
+                    <div class="feature">
+
+                        <div class="feature-icon">
+                            ◉
+                        </div>
+
+                        Real-time network monitoring
+
+                    </div>
+
+
+                    <div class="feature">
+
+                        <div class="feature-icon">
+                            ✦
+                        </div>
+
+                        AI-powered threat detection
+
+                    </div>
+
+
+                    <div class="feature">
+
+                        <div class="feature-icon">
+                            ✓
+                        </div>
+
+                        Explainable security insights
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- NETWORK ORBIT -->
+
+            <div class="orbit">
+
+                <div class="orbit-ring ring-one"></div>
+
+                <div class="orbit-ring ring-two"></div>
+
+                <div class="orbit-center">
+                    🛡
+                </div>
+
+                <span class="orbit-node node-one"></span>
+                <span class="orbit-node node-two"></span>
+                <span class="orbit-node node-three"></span>
+                <span class="orbit-node node-four"></span>
+
+            </div>
+
+
+
+            <!-- FOOTER -->
+
+            <div class="system-footer">
+
+                <span class="system-footer-dot"></span>
+
+                All systems operational
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =====================================
+             RIGHT SIDE
+        ====================================== -->
+
+        <section class="right-panel">
+
+
+            <!-- HEADER -->
+
+            <div class="login-header">
+
+                <h2>
+                    Welcome back
+                </h2>
+
+                <p>
+                    Sign in to continue to your NIDS dashboard.
+                </p>
+
+            </div>
+
+
+
+            <!-- ERROR -->
+
+            {% if error %}
+
+            <div class="error-message">
+                {{ error }}
+            </div>
+
+            {% endif %}
+
+
+
+            <!-- LOGIN FORM -->
+
+            <form
+                method="POST"
+                action="{{ url_for('login') }}"
+            >
+
+
+                <!-- USERNAME -->
+
+                <div class="form-group">
+
+                    <label class="form-label">
+                        Username
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <span class="input-icon">
+                            ◉
+                        </span>
+
+                        <input
+                            type="text"
+                            name="username"
+                            class="form-input"
+                            placeholder="Enter your username"
+                            required
+                            autocomplete="username"
+                        >
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- PASSWORD -->
+
+                <div class="form-group">
+
+                    <label class="form-label">
+                        Password
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <span class="input-icon">
+                            ◈
+                        </span>
+
+                        <input
+                            type="password"
+                            name="password"
+                            id="password"
+                            class="form-input"
+                            placeholder="Enter your password"
+                            required
+                            autocomplete="current-password"
+                        >
+
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            id="passwordToggle"
+                            onclick="togglePassword()"
+                        >
+                            Show
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- FORGOT PASSWORD -->
+
+                <div class="form-options">
+
+                    <a
+                        href="{{ url_for('forgot_password') }}"
+                        class="forgot"
+                    >
+                        Forgot password?
+                    </a>
+
+                </div>
+
+
+
+                <!-- LOGIN -->
+
+                <button
+                    type="submit"
+                    class="login-button"
+                >
+                    Sign in securely →
+                </button>
+
+
+            </form>
+
+
+
+            <!-- CREATE ACCOUNT -->
+
+            <div class="signup">
+
+                Don't have an account?
+
+                <a href="{{ url_for('signup') }}">
+                    Create an account
+                </a>
+
+            </div>
+
+
+
+            <!-- SECURITY -->
+
+            <div class="security-note">
+
+                <span>●</span>
+
+                Your connection is protected by NIDS
+
+            </div>
+
+
+        </section>
+
+
+    </div>
+
+
+
+    <!-- PASSWORD SCRIPT -->
+
+    <script>
+
+        function togglePassword() {
+
+            const password =
+                document.getElementById("password");
+
+            const button =
+                document.getElementById("passwordToggle");
+
+
+            if (password.type === "password") {
+
+                password.type = "text";
+
+                button.textContent = "Hide";
+
+            }
+
+            else {
+
+                password.type = "password";
+
+                button.textContent = "Show";
+
+            }
+
+        }
+
+    </script>
+
+
+</body>
+
+</html>

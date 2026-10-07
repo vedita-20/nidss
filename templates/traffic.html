@@ -1,0 +1,1822 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>NIDS - Traffic Monitor</title>
+
+
+    <style>
+
+        /* ================================
+           RESET
+        ================================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        /* ================================
+           VARIABLES
+        ================================= */
+
+        :root {
+            --bg: #F7F9FC;
+            --white: #FFFFFF;
+
+            --blue: #2563EB;
+            --blue-light: #E8F0FE;
+
+            --text: #172033;
+            --muted: #64748B;
+
+            --border: #E6EBF2;
+
+            --green: #16A34A;
+            --red: #DC2626;
+            --red-light: #FDECEC;
+        }
+
+
+        /* ================================
+           BODY
+        ================================= */
+
+        body {
+            font-family: "Inter", Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+
+        /* ================================
+           APP
+        ================================= */
+
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+
+        /* ================================
+           SIDEBAR
+        ================================= */
+
+        .sidebar {
+            width: 200px;
+
+            background: var(--white);
+
+            border-right: 1px solid var(--border);
+
+            position: fixed;
+
+            left: 0;
+            top: 0;
+            bottom: 0;
+
+            z-index: 100;
+
+            display: flex;
+            flex-direction: column;
+        }
+
+
+        /* ================================
+           LOGO
+        ================================= */
+
+        .logo {
+            height: 64px;
+
+            display: flex;
+            align-items: center;
+
+            padding: 0 22px;
+
+            border-bottom: 1px solid var(--border);
+
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+
+        .logo span {
+            color: var(--black);
+        }
+
+
+        /* ================================
+           PROFILE
+        ================================= */
+
+        .profile-section {
+            display: block;
+            padding: 18px 16px;
+            border-bottom: 1px solid var(--border);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .profile-section:hover {
+            background: #F8FAFC;
+        }
+
+        .profile-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--blue-light);
+            color: var(--blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .profile-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .profile-username {
+            margin-top: 3px;
+            font-size: 12px;
+            color: var(--muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ================================
+           LOGOUT
+        ================================= */
+
+        .logout-button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .logout-button:hover {
+            background: #FEF2F2;
+            color: var(--red);
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            padding: 12px 10px 18px;
+        }
+
+        .version {
+            text-align: center;
+            margin-top: 10px;
+            color: #94A3B8;
+            font-size: 10px;
+        }
+
+        /* ================================
+           NAVIGATION
+        ================================= */
+
+        .nav {
+            padding: 16px 10px;
+
+            display: flex;
+            flex-direction: column;
+
+            gap: 6px;
+
+            flex: 1;
+        }
+
+
+        .nav a {
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+
+            padding: 12px 14px;
+
+            border-radius: 8px;
+
+            text-decoration: none;
+
+            color: var(--muted);
+
+            font-size: 14px;
+            font-weight: 500;
+
+            transition:
+                background 0.2s ease,
+                color 0.2s ease;
+        }
+
+
+        .nav a:hover {
+            background: #F1F5F9;
+            color: var(--blue);
+        }
+
+
+        .nav a.active {
+            background: var(--blue-light);
+            color: var(--blue);
+
+            font-weight: 600;
+        }
+
+
+        /* ================================
+           MAIN
+        ================================= */
+
+        .main {
+            margin-left: 200px;
+
+            width: calc(100% - 200px);
+
+            min-height: 100vh;
+        }
+
+
+        /* ================================
+           TOPBAR
+        ================================= */
+
+        .topbar {
+            height: 64px;
+
+            border-bottom: 1px solid var(--border);
+
+            display: flex;
+            align-items: center;
+
+            padding: 0 28px;
+
+            background: rgba(255, 255, 255, 0.96);
+
+            justify-content: space-between;
+        }
+
+
+        .topbar-title {
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+
+            font-size: 18px;
+
+            font-weight: 600;
+
+            color: var(--text);
+
+            white-space: nowrap;
+        }
+
+
+        
+
+        .top-right {
+            display: flex;
+            align-items: center;
+
+            margin-left: auto;
+        }
+
+
+        .topbar-status {
+            display: flex;
+            align-items: center;
+
+            gap: 8px;
+
+            padding: 7px 12px;
+
+            font-size: 13px;
+            font-weight: 500;
+
+            color: #475569;
+
+            background: #F8FAFC;
+
+            border: 1px solid var(--border);
+
+            border-radius: 20px;
+
+            white-space: nowrap;
+        }
+
+
+        .live-dot {
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: #22C55E;
+        }
+
+
+        /* ================================
+           CONTENT
+        ================================= */
+
+        .content {
+            padding: 28px 32px 40px;
+
+            max-width: 1600px;
+
+            margin: auto;
+        }
+
+
+        /* ================================
+           PAGE HEADER
+        ================================= */
+
+        .page-header {
+            margin-bottom: 20px;
+        }
+
+
+        .page-header h1 {
+            font-size: 26px;
+
+            font-weight: 700;
+
+            color: var(--text);
+
+            margin-bottom: 6px;
+        }
+
+
+        .page-header p {
+            color: var(--muted);
+
+            font-size: 14px;
+        }
+
+
+        /* ================================
+           STATUS CARD
+        ================================= */
+
+        .status-card {
+            background: var(--white);
+
+            border: 1px solid #E7ECF3;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 3px 12px rgba(15, 23, 42, 0.035);
+
+            padding: 13px 17px;
+
+            margin-bottom: 20px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            color: var(--muted);
+
+            font-size: 13px;
+        }
+
+
+        .status-left {
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+        }
+
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: var(--green);
+        }
+
+
+        #lastUpdated {
+            color: #94A3B8;
+
+            font-size: 12px;
+        }
+
+
+        /* ================================
+           TRAFFIC PANEL
+        ================================= */
+
+        .panel {
+            background: var(--white);
+
+            border: 1px solid #E7ECF3;
+
+            border-radius: 12px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 3px 12px rgba(15, 23, 42, 0.035);
+        }
+
+
+        .panel-header {
+            padding: 16px 20px;
+
+            border-bottom: 1px solid var(--border);
+
+            font-size: 15px;
+
+            font-weight: 600;
+
+            color: var(--text);
+        }
+
+
+        .panel-body {
+            padding: 0;
+
+            overflow-x: auto;
+        }
+
+
+        /* ================================
+           TABLE
+        ================================= */
+
+        .traffic-table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 950px;
+        }
+
+
+        .traffic-table th {
+            color: var(--muted);
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            text-align: left;
+
+            padding: 14px 18px;
+
+            border-bottom: 1px solid var(--border);
+
+            background: #F8FAFC;
+
+            white-space: nowrap;
+        }
+
+
+        .traffic-table td {
+            color: #334155;
+
+            font-size: 13px;
+
+            font-weight: 500;
+
+            padding: 14px 18px;
+
+            border-bottom: 1px solid #EEF2F7;
+
+            white-space: nowrap;
+        }
+
+
+        .traffic-table tbody tr:hover {
+            background: #F8FAFC;
+        }
+
+
+        .protocol {
+            font-weight: 600;
+
+            color: var(--blue);
+        }
+
+
+        /* ================================
+           LOADING
+        ================================= */
+
+        .loading {
+            text-align: center;
+
+            padding: 40px;
+
+            color: var(--muted);
+
+            font-size: 13px;
+        }
+
+
+        /* ================================
+           ERROR
+        ================================= */
+
+        .error {
+            margin: 16px;
+
+            padding: 12px 14px;
+
+            color: var(--red);
+
+            background: var(--red-light);
+
+            border: 1px solid #FECACA;
+
+            border-radius: 8px;
+
+            font-size: 13px;
+        }
+
+
+        /* ================================
+           EMPTY
+        ================================= */
+
+        .empty {
+            text-align: center;
+
+            padding: 40px;
+
+            color: var(--muted);
+
+            font-size: 13px;
+        }
+
+
+        /* ================================
+           RESPONSIVE
+        ================================= */
+
+        @media (max-width: 900px) {
+
+            .sidebar {
+                width: 180px;
+            }
+
+
+            .main {
+                margin-left: 180px;
+
+                width: calc(100% - 180px);
+            }
+
+
+            .content {
+                padding: 24px 20px 30px;
+            }
+
+        }
+
+
+        @media (max-width: 700px) {
+
+            .sidebar {
+                position: relative;
+
+                width: 100%;
+
+                height: auto;
+
+                border-right: none;
+
+                border-bottom: 1px solid var(--border);
+            }
+
+
+            .nav {
+                flex-direction: row;
+
+                flex-wrap: wrap;
+            }
+
+
+            .main {
+                margin-left: 0;
+
+                width: 100%;
+            }
+
+
+            .topbar {
+                padding: 0 18px;
+            }
+
+
+            .topbar-title {
+                font-size: 16px;
+            }
+
+
+            .content {
+                padding: 20px 16px 30px;
+            }
+
+        }
+        /* =========================================================
+   TRAFFIC PAGE ANIMATIONS
+   ========================================================= */
+
+/* PAGE LOAD */
+body {
+    animation: pageFadeIn 0.45s ease-out both;
+}
+
+@keyframes pageFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+
+/* SIDEBAR */
+.sidebar {
+    animation: sidebarIn 0.45s ease-out both;
+}
+
+@keyframes sidebarIn {
+    from {
+        opacity: 0;
+        transform: translateX(-18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+
+/* PROFILE */
+.profile-section {
+    transition:
+        background 0.25s ease,
+        transform 0.25s ease;
+}
+
+.profile-section:hover {
+    background: #F8FAFC;
+    transform: translateX(2px);
+}
+
+.profile-avatar {
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.profile-section:hover .profile-avatar {
+    transform: scale(1.06);
+    box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.08);
+}
+
+
+/* NAVIGATION */
+.nav a {
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease,
+        padding-left 0.2s ease;
+}
+
+.nav a:hover {
+    transform: translateX(4px);
+    padding-left: 16px;
+}
+
+.nav a.active {
+    box-shadow: inset 3px 0 0 var(--blue);
+}
+
+
+/* TOPBAR */
+.topbar {
+    animation: topbarIn 0.5s ease-out both;
+}
+
+@keyframes topbarIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* LIVE STATUS */
+.live-dot,
+.status-dot {
+    animation: livePulse 1.8s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.35);
+    }
+
+    70% {
+        box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+    }
+}
+
+.topbar-status {
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.topbar-status:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+
+/* MAIN CONTENT */
+.content {
+    animation: contentIn 0.55s ease-out both;
+}
+
+@keyframes contentIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* PAGE HEADER */
+.page-header {
+    animation: headerIn 0.55s ease-out both;
+}
+
+@keyframes headerIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* TRAFFIC SUMMARY CARDS */
+.stat-card {
+    opacity: 0;
+    animation: statCardIn 0.55s ease-out forwards;
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
+}
+
+.stat-card:nth-child(1) {
+    animation-delay: 0.08s;
+}
+
+.stat-card:nth-child(2) {
+    animation-delay: 0.16s;
+}
+
+.stat-card:nth-child(3) {
+    animation-delay: 0.24s;
+}
+
+.stat-card:nth-child(4) {
+    animation-delay: 0.32s;
+}
+
+@keyframes statCardIn {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    border-color: #D6E4FF;
+    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.08);
+}
+
+.stat-value {
+    transition:
+        color 0.25s ease,
+        transform 0.25s ease;
+}
+
+.stat-card:hover .stat-value {
+    color: var(--blue);
+    transform: translateX(2px);
+}
+
+
+/* PANELS */
+.panel {
+    opacity: 0;
+    animation: panelIn 0.55s ease-out forwards;
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
+}
+
+.panel:nth-child(1) {
+    animation-delay: 0.35s;
+}
+
+.panel:nth-child(2) {
+    animation-delay: 0.45s;
+}
+
+@keyframes panelIn {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.panel:hover {
+    transform: translateY(-2px);
+    border-color: #DDE6F2;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.055);
+}
+
+
+/* PANEL TITLES */
+.panel-title {
+    transition: color 0.2s ease;
+}
+
+.panel:hover .panel-title {
+    color: var(--blue);
+}
+
+
+/* TRAFFIC TABLE */
+.traffic-table {
+    animation: tableReveal 0.7s ease-out 0.45s both;
+}
+
+@keyframes tableReveal {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* TABLE ROWS */
+.traffic-table tbody tr {
+    animation: rowIn 0.35s ease-out both;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+@keyframes rowIn {
+    from {
+        opacity: 0;
+        transform: translateX(-7px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.traffic-table tbody tr:hover {
+    background: #F4F7FB;
+    transform: translateX(2px);
+}
+
+
+/* TRAFFIC STATUS BADGES */
+.status,
+.badge,
+.traffic-status {
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.status:hover,
+.badge:hover,
+.traffic-status:hover {
+    transform: scale(1.05);
+}
+
+
+/* NORMAL STATUS */
+.status.normal,
+.badge.normal {
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.status.normal:hover,
+.badge.normal:hover {
+    transform: scale(1.05);
+}
+
+
+/* ATTACK / SUSPICIOUS STATUS */
+.status.attack,
+.status.suspicious,
+.badge.attack,
+.badge.suspicious {
+    animation: warningPulse 2s ease-in-out infinite;
+}
+
+@keyframes warningPulse {
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+    }
+
+    50% {
+        box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.08);
+    }
+}
+
+
+/* FILTER / SEARCH INPUTS */
+input,
+select {
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+input:hover,
+select:hover {
+    border-color: #CBD5E1;
+}
+
+input:focus,
+select:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+    outline: none;
+}
+
+
+/* BUTTONS */
+button,
+.action-btn,
+.refresh-btn,
+.export-btn {
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+button:hover,
+.action-btn:hover,
+.refresh-btn:hover,
+.export-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 16px rgba(37, 99, 235, 0.12);
+}
+
+button:active,
+.action-btn:active,
+.refresh-btn:active,
+.export-btn:active {
+    transform: scale(0.97);
+}
+
+
+/* REFRESH BUTTON */
+.refresh-btn:hover {
+    transform: translateY(-2px) rotate(1deg);
+}
+
+
+/* LOADING */
+.loading {
+    animation: loadingFade 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes loadingFade {
+    from {
+        opacity: 0.45;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+
+/* EMPTY STATE */
+.empty-state {
+    animation: emptyStateIn 0.5s ease-out both;
+}
+
+@keyframes emptyStateIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* PAGINATION */
+.pagination button {
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.pagination button:hover {
+    transform: translateY(-2px);
+}
+
+
+/* SYSTEM CARD */
+.system-card {
+    padding: 11px 12px;
+
+    background: #F8FAFC;
+
+    border: 1px solid #E7ECF3;
+
+    border-radius: 9px;
+}
+
+.system-title {
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    color: #334155;
+}
+
+.status-dot {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: #22C55E;
+
+    animation: systemPulse 1.8s ease-in-out infinite;
+}
+
+.system-subtitle {
+    margin-top: 5px;
+
+    font-size: 10px;
+
+    color: #64748B;
+}
+
+
+
+/* LOGOUT */
+.logout-button {
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.logout-button:hover {
+    transform: translateX(3px);
+}
+
+
+/* SCROLLBAR */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #F7F9FC;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #94A3B8;
+}
+
+
+/* REDUCE MOTION FOR ACCESSIBILITY */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =================================
+         APP
+    ================================= -->
+
+    <div class="app">
+
+
+        <!-- =================================
+             SIDEBAR
+        ================================= -->
+
+        <aside class="sidebar">
+
+            <!-- PROFILE -->
+            <a href="{{ url_for('profile') }}" class="profile-section">
+
+                <div class="profile-avatar">
+                    {{ session.get('user_name', 'U')[0].upper() }}
+                </div>
+
+                <div class="profile-info">
+
+                    <div class="profile-name">
+                        {{ session.get('user_name', 'User') }}
+                    </div>
+
+                    <div class="profile-username">
+                        @{{ session.get('username', 'user') }}
+                    </div>
+
+                </div>
+
+            </a>
+
+
+            <!-- NAVIGATION -->
+            <nav class="nav">
+
+                <a href="/">
+                    <span>
+                        Dashboard
+                    </span>
+                </a>
+
+                <a href="/traffic" class="active">
+                    <span>
+                        Traffic Monitor
+                    </span>
+                </a>
+
+                <a href="/alerts">
+                    <span>
+                        Alerts
+                    </span>
+                </a>
+
+                <a href="/analysis">
+                    <span>
+                        Analysis
+                    </span>
+                </a>
+
+                <a href="/reports">
+                    <span>
+                        Reports
+                    </span>
+                </a>
+
+                <a href="/logs">
+                    <span>
+                        Logs
+                    </span>
+                </a>
+
+            </nav>
+
+
+            <!-- SIDEBAR BOTTOM -->
+            <div class="sidebar-bottom">
+
+                <!-- LOGOUT -->
+                <a href="{{ url_for('logout') }}" class="logout-button">
+                    
+                    <span>Logout</span>
+                </a>
+
+
+                <!-- SYSTEM STATUS -->
+                <div class="system-card">
+
+                    <div class="system-title">
+                        <span class="status-dot"></span>
+                        System Status
+                    </div>
+
+                    <div class="system-subtitle">
+                        All systems operational
+                    </div>
+
+                </div>
+
+
+                <!-- VERSION -->
+                <div class="version">
+                    NIDS v1.0
+                </div>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =================================
+             MAIN
+        ================================= -->
+
+        <main class="main">
+
+
+            <!-- =================================
+                 TOPBAR
+            ================================= -->
+
+            <header class="topbar">
+
+
+                <div class="topbar-title">
+
+                    <span class="topbar-dot"></span>
+
+                    Network Intrusion Detection System
+
+                </div>
+
+
+                <div class="top-right">
+
+
+                    <div class="topbar-status">
+
+                        <span class="live-dot"></span>
+
+                        Live Monitoring
+
+                    </div>
+
+
+                </div>
+
+
+            </header>
+
+
+
+            <!-- =================================
+                 CONTENT
+            ================================= -->
+
+            <div class="content">
+
+
+                <!-- PAGE HEADER -->
+
+                <div class="page-header">
+
+
+                    <h1>
+                        Network Traffic
+                    </h1>
+
+
+                    <p>
+                        Recently captured network traffic flows
+                    </p>
+
+
+                </div>
+
+
+
+                <!-- STATUS -->
+
+                <div class="status-card">
+
+
+                    <div class="status-left">
+
+                        <span class="status-dot"></span>
+
+                        <span>
+                            Live monitoring active
+                        </span>
+
+                    </div>
+
+
+                    <span id="lastUpdated">
+                        Waiting for data...
+                    </span>
+
+
+                </div>
+
+
+
+                <!-- TRAFFIC PANEL -->
+
+                <div class="panel">
+
+
+                    <div class="panel-header">
+
+                        Captured Traffic Flows
+
+                    </div>
+
+
+                    <div class="panel-body">
+
+
+                        <div id="loading"
+                             class="loading">
+
+                            Loading network traffic...
+
+                        </div>
+
+
+                        <div id="error"
+                             class="error"
+                             style="display: none;">
+
+                        </div>
+
+
+                        <table id="trafficTable"
+                               class="traffic-table"
+                               style="display: none;">
+
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        TIME
+                                    </th>
+
+
+                                    <th>
+                                        SOURCE IP
+                                    </th>
+
+
+                                    <th>
+                                        SRC PORT
+                                    </th>
+
+
+                                    <th>
+                                        DESTINATION IP
+                                    </th>
+
+
+                                    <th>
+                                        DEST PORT
+                                    </th>
+
+
+                                    <th>
+                                        PROTOCOL
+                                    </th>
+
+
+                                    <th>
+                                        PACKETS
+                                    </th>
+
+
+                                    <th>
+                                        DURATION (ms)
+                                    </th>
+
+
+                                    <th>
+                                        TOTAL BYTES
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody id="trafficBody">
+
+                            </tbody>
+
+
+                        </table>
+
+
+                        <div id="empty"
+                             class="empty"
+                             style="display: none;">
+
+                            No network traffic has been recorded yet.
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+
+    <!-- =================================
+         JAVASCRIPT
+    ================================= -->
+
+    <script>
+
+
+        /* ================================
+           LOAD TRAFFIC
+        ================================= */
+
+        async function loadTraffic() {
+
+            try {
+
+
+                const response =
+                    await fetch("/api/traffic");
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Failed to load traffic"
+                    );
+
+                }
+
+
+                const traffic =
+                    await response.json();
+
+
+                const loading =
+                    document.getElementById(
+                        "loading"
+                    );
+
+
+                const table =
+                    document.getElementById(
+                        "trafficTable"
+                    );
+
+
+                const body =
+                    document.getElementById(
+                        "trafficBody"
+                    );
+
+
+                const empty =
+                    document.getElementById(
+                        "empty"
+                    );
+
+
+                const error =
+                    document.getElementById(
+                        "error"
+                    );
+
+
+                loading.style.display =
+                    "none";
+
+
+                error.style.display =
+                    "none";
+
+
+                body.innerHTML =
+                    "";
+
+
+                /* ================================
+                   NO TRAFFIC
+                ================================= */
+
+                if (traffic.length === 0) {
+
+                    table.style.display =
+                        "none";
+
+
+                    empty.style.display =
+                        "block";
+
+
+                    updateTime();
+
+                    return;
+                }
+
+
+                /* ================================
+                   SHOW TABLE
+                ================================= */
+
+                empty.style.display =
+                    "none";
+
+
+                table.style.display =
+                    "table";
+
+
+                /* ================================
+                   ADD ROWS
+                ================================= */
+
+                traffic.forEach(row => {
+
+
+                    const tableRow =
+                        document.createElement(
+                            "tr"
+                        );
+
+
+                    let duration =
+                        row.flow_duration || 0;
+
+
+                    if (
+                        typeof duration === "number" &&
+                        !Number.isInteger(duration)
+                    ) {
+
+                        duration =
+                            duration.toFixed(2);
+
+                    }
+
+
+                    tableRow.innerHTML = `
+
+                        <td>
+                            ${
+                                row.timestamp
+                                    ? new Date(
+                                        row.timestamp
+                                      ).toLocaleTimeString()
+                                    : "N/A"
+                            }
+                        </td>
+
+
+                        <td>
+                            ${row.source_ip || "N/A"}
+                        </td>
+
+
+                        <td>
+                            ${row.source_port || 0}
+                        </td>
+
+
+                        <td>
+                            ${row.destination_ip || "N/A"}
+                        </td>
+
+
+                        <td>
+                            ${row.destination_port || 0}
+                        </td>
+
+
+                        <td class="protocol">
+                            ${row.protocol || "N/A"}
+                        </td>
+
+
+                        <td>
+                            ${Number(
+                                row.packet_count || 0
+                            ).toLocaleString()}
+                        </td>
+
+
+                        <td>
+                            ${duration}
+                        </td>
+
+
+                        <td>
+                            ${Number(
+                                row.total_bytes || 0
+                            ).toLocaleString()}
+                        </td>
+
+                    `;
+
+
+                    body.appendChild(
+                        tableRow
+                    );
+
+                });
+
+
+                updateTime();
+
+            }
+
+
+            catch (error) {
+
+
+                console.error(
+                    "Traffic loading error:",
+                    error
+                );
+
+
+                document.getElementById(
+                    "loading"
+                ).style.display =
+                    "none";
+
+
+                const errorBox =
+                    document.getElementById(
+                        "error"
+                    );
+
+
+                errorBox.style.display =
+                    "block";
+
+
+                errorBox.textContent =
+                    "Error loading traffic: " +
+                    error.message;
+
+            }
+
+        }
+
+
+
+        /* ================================
+           UPDATE TIME
+        ================================= */
+
+        function updateTime() {
+
+            const now =
+                new Date();
+
+
+            document.getElementById(
+                "lastUpdated"
+            ).textContent =
+                "Last updated: " +
+                now.toLocaleTimeString();
+
+        }
+
+
+
+        /* ================================
+           INITIAL LOAD
+        ================================= */
+
+        loadTraffic();
+
+
+
+        /* ================================
+           AUTO REFRESH
+        ================================= */
+
+        setInterval(
+            loadTraffic,
+            5000
+        );
+
+
+    </script>
+
+
+</body>
+
+</html>

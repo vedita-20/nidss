@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Security Profile - NIDS</title>
+
+
+<style>
+
+/* =========================================
+   RESET
+========================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+/* =========================================
+   VARIABLES
+========================================= */
+
+:root {
+
+    --bg: #F7F9FC;
+    --white: #FFFFFF;
+
+    --blue: #2563EB;
+    --blue-dark: #1D4ED8;
+    --blue-light: #EEF4FF;
+
+    --text: #172033;
+    --muted: #64748B;
+
+    --border: #E7ECF3;
+
+    --green: #22C55E;
+    --green-dark: #15803D;
+    --green-light: #F0FDF4;
+
+    --red: #DC2626;
+    --red-light: #FEF2F2;
+
+}
+
+
+/* =========================================
+   BODY
+========================================= */
+
+body {
+
+    font-family:
+        "Inter",
+        Arial,
+        sans-serif;
+
+    color: var(--text);
+
+    min-height: 100vh;
+
+    overflow-x: hidden;
+
+}
+
+
+/* =========================================
+   PAGE BACKGROUND
+========================================= */
+
+.profile-page {
+
+    min-height: 100vh;
+
+    padding: 35px 25px;
+
+    background-color: var(--bg);
+
+    background-image:
+        linear-gradient(
+            rgba(37, 99, 235, 0.025) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(37, 99, 235, 0.025) 1px,
+            transparent 1px
+        );
+
+    background-size: 30px 30px;
+
+    animation:
+        pageEnter 0.5s ease-out;
+
+}
+
+
+@keyframes pageEnter {
+
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+
+}
+
+
+/* =========================================
+   CONTAINER
+========================================= */
+
+.container {
+
+    width: 100%;
+
+    max-width: 920px;
+
+    margin: 0 auto;
+
+}
+
+
+/* =========================================
+   TOP BAR
+========================================= */
+
+.top-bar {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 22px;
+
+    animation:
+        topEnter 0.5s ease-out;
+
+}
+
+
+@keyframes topEnter {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(-8px);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0);
+
+    }
+
+}
+
+
+.back-link {
+
+    color: var(--muted);
+
+    text-decoration: none;
+
+    font-size: 13px;
+
+    font-weight: 500;
+
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+
+}
+
+
+.back-link:hover {
+
+    color: var(--blue);
+
+    transform:
+        translateX(-3px);
+
+}
+
+
+.system-online {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 7px 11px;
+
+    background: rgba(255,255,255,0.8);
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 20px;
+
+    color: #475569;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+}
+
+
+.system-dot {
+
+    width: 7px;
+
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: var(--green);
+
+    animation:
+        pulse 1.8s infinite;
+
+}
+
+
+@keyframes pulse {
+
+    0% {
+
+        box-shadow:
+            0 0 0 0 rgba(34,197,94,0.4);
+
+    }
+
+    70% {
+
+        box-shadow:
+            0 0 0 7px rgba(34,197,94,0);
+
+    }
+
+    100% {
+
+        box-shadow:
+            0 0 0 0 rgba(34,197,94,0);
+
+    }
+
+}
+
+
+/* =========================================
+   PAGE TITLE
+========================================= */
+
+.page-heading {
+
+    margin-bottom: 18px;
+
+    animation:
+        contentEnter 0.55s ease-out;
+
+}
+
+
+.page-heading h1 {
+
+    font-size: 27px;
+
+    font-weight: 700;
+
+    letter-spacing: -0.5px;
+
+}
+
+
+.page-heading p {
+
+    margin-top: 5px;
+
+    color: var(--muted);
+
+    font-size: 13px;
+
+}
+
+
+@keyframes contentEnter {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(12px);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0);
+
+    }
+
+}
+
+
+/* =========================================
+   MAIN PROFILE CARD
+========================================= */
+
+.profile-card {
+
+    position: relative;
+
+    background: var(--white);
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 8px 30px rgba(15,23,42,0.05);
+
+    overflow: hidden;
+
+    animation:
+        cardEnter 0.6s ease-out;
+
+}
+
+
+@keyframes cardEnter {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(18px)
+            scale(0.985);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+
+    }
+
+}
+
+
+/* =========================================
+   SCANNING LINE
+========================================= */
+
+.scan-line {
+
+    position: absolute;
+
+    left: 0;
+
+    top: 0;
+
+    width: 100%;
+
+    height: 1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(37,99,235,0.45),
+            transparent
+        );
+
+    animation:
+        scan 4s ease-in-out infinite;
+
+    pointer-events: none;
+
+}
+
+
+@keyframes scan {
+
+    0% {
+
+        top: 0;
+
+        opacity: 0;
+
+    }
+
+    15% {
+
+        opacity: 1;
+
+    }
+
+    50% {
+
+        opacity: 1;
+
+    }
+
+    85% {
+
+        opacity: 0.5;
+
+    }
+
+    100% {
+
+        top: 100%;
+
+        opacity: 0;
+
+    }
+
+}
+
+
+/* =========================================
+   PROFILE HEADER
+========================================= */
+
+.profile-header {
+
+    position: relative;
+
+    padding: 38px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 25px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #FFFFFF 0%,
+            #F8FBFF 100%
+        );
+
+    border-bottom:
+        1px solid var(--border);
+
+}
+
+
+/* =========================================
+   AVATAR
+========================================= */
+
+.avatar-wrapper {
+
+    position: relative;
+
+    flex-shrink: 0;
+
+}
+
+
+.avatar {
+
+    width: 92px;
+
+    height: 92px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #EFF6FF,
+            #DBEAFE
+        );
+
+    color: var(--blue);
+
+    font-size: 34px;
+
+    font-weight: 700;
+
+    border:
+        2px solid #BFDBFE;
+
+    box-shadow:
+        0 0 0 7px #EFF6FF,
+        0 8px 20px rgba(37,99,235,0.12);
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+
+}
+
+
+.avatar:hover {
+
+    transform:
+        scale(1.06);
+
+    box-shadow:
+        0 0 0 9px #EFF6FF,
+        0 10px 28px rgba(37,99,235,0.18);
+
+}
+
+
+.avatar-status {
+
+    position: absolute;
+
+    right: 2px;
+
+    bottom: 4px;
+
+    width: 17px;
+
+    height: 17px;
+
+    border-radius: 50%;
+
+    background: var(--green);
+
+    border:
+        3px solid white;
+
+    animation:
+        pulse 2s infinite;
+
+}
+
+
+/* =========================================
+   PROFILE IDENTITY
+========================================= */
+
+.identity {
+
+    flex: 1;
+
+}
+
+
+.identity-label {
+
+    display: inline-block;
+
+    margin-bottom: 7px;
+
+    color: var(--blue);
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.2px;
+
+}
+
+
+.identity h2 {
+
+    font-size: 25px;
+
+    font-weight: 700;
+
+    letter-spacing: -0.3px;
+
+}
+
+
+.username {
+
+    margin-top: 5px;
+
+    color: var(--muted);
+
+    font-size: 14px;
+
+}
+
+
+.verified {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    margin-top: 11px;
+
+    padding: 5px 9px;
+
+    border-radius: 20px;
+
+    background: var(--green-light);
+
+    color: var(--green-dark);
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.3px;
+
+}
+
+
+.verified-dot {
+
+    width: 6px;
+
+    height: 6px;
+
+    border-radius: 50%;
+
+    background: var(--green);
+
+}
+
+
+/* =========================================
+   SECURITY STATUS
+========================================= */
+
+.security-status {
+
+    padding: 25px 30px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 14px;
+
+    border-bottom:
+        1px solid var(--border);
+
+}
+
+
+.status-card {
+
+    position: relative;
+
+    padding: 18px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 11px;
+
+    background: #FBFCFE;
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+
+    animation:
+        statusEnter 0.5s ease-out both;
+
+}
+
+
+.status-card:nth-child(2) {
+
+    animation-delay:
+        0.12s;
+
+}
+
+
+.status-card:hover {
+
+    transform:
+        translateY(-3px);
+
+    border-color:
+        #BFDBFE;
+
+    box-shadow:
+        0 7px 20px rgba(15,23,42,0.05);
+
+}
+
+
+@keyframes statusEnter {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(10px);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0);
+
+    }
+
+}
+
+
+.status-icon {
+
+    width: 34px;
+
+    height: 34px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background: var(--blue-light);
+
+    color: var(--blue);
+
+    font-size: 16px;
+
+    margin-bottom: 12px;
+
+}
+
+
+.status-card:nth-child(2)
+.status-icon {
+
+    background:
+        var(--green-light);
+
+    color:
+        var(--green-dark);
+
+}
+
+
+.status-label {
+
+    color: var(--muted);
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.5px;
+
+}
+
+
+.status-value {
+
+    margin-top: 5px;
+
+    color: var(--text);
+
+    font-size: 14px;
+
+    font-weight: 650;
+
+}
+
+
+.status-description {
+
+    margin-top: 4px;
+
+    color: #94A3B8;
+
+    font-size: 11px;
+
+}
+
+
+/* =========================================
+   INFORMATION
+========================================= */
+
+.information {
+
+    padding: 27px 30px;
+
+}
+
+
+.section-heading {
+
+    margin-bottom: 15px;
+
+    font-size: 14px;
+
+    font-weight: 650;
+
+}
+
+
+.info-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 12px;
+
+}
+
+
+.info-item {
+
+    padding: 16px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 10px;
+
+    background: #FFFFFF;
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease;
+
+    animation:
+        infoEnter 0.5s ease-out both;
+
+}
+
+
+.info-item:nth-child(2) {
+
+    animation-delay:
+        0.08s;
+
+}
+
+
+.info-item:nth-child(3) {
+
+    animation-delay:
+        0.16s;
+
+}
+
+
+.info-item:hover {
+
+    transform:
+        translateY(-2px);
+
+    background:
+        #FBFCFE;
+
+    border-color:
+        #BFDBFE;
+
+}
+
+
+@keyframes infoEnter {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(8px);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0);
+
+    }
+
+}
+
+
+.info-label {
+
+    color: var(--muted);
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.5px;
+
+    margin-bottom: 7px;
+
+}
+
+
+.info-value {
+
+    color: var(--text);
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    word-break: break-word;
+
+}
+
+
+/* =========================================
+   SECURITY CODE
+========================================= */
+
+.security-code {
+
+    margin-top: 20px;
+
+    padding: 13px 16px;
+
+    border-radius: 9px;
+
+    background:
+        #F8FAFC;
+
+    border:
+        1px dashed #D8E0EA;
+
+    color:
+        #64748B;
+
+    font-family:
+        "Courier New",
+        monospace;
+
+    font-size: 10px;
+
+    line-height: 1.8;
+
+}
+
+
+.code-blue {
+
+    color: var(--blue);
+
+}
+
+
+.code-green {
+
+    color: var(--green-dark);
+
+}
+
+
+/* =========================================
+   FOOTER
+========================================= */
+
+.profile-footer {
+
+    padding:
+        20px 30px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    background:
+        #FBFCFE;
+
+    border-top:
+        1px solid var(--border);
+
+}
+
+
+.footer-text {
+
+    color:
+        #94A3B8;
+
+    font-size:
+        10px;
+
+}
+
+
+.actions {
+
+    display:
+        flex;
+
+    gap:
+        9px;
+
+}
+
+
+.button {
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    padding:
+        9px 15px;
+
+    border-radius:
+        8px;
+
+    text-decoration:
+        none;
+
+    font-size:
+        11px;
+
+    font-weight:
+        600;
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+
+}
+
+
+.button:hover {
+
+    transform:
+        translateY(-2px);
+
+}
+
+
+.dashboard-button {
+
+    background:
+        var(--blue);
+
+    color:
+        white;
+
+}
+
+
+.dashboard-button:hover {
+
+    background:
+        var(--blue-dark);
+
+    box-shadow:
+        0 5px 15px
+        rgba(37,99,235,0.2);
+
+}
+
+
+.logout-button {
+
+    background:
+        var(--red-light);
+
+    color:
+        var(--red);
+
+}
+
+
+.logout-button:hover {
+
+    background:
+        #FEE2E2;
+
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 650px) {
+
+    .profile-page {
+
+        padding:
+            22px 14px;
+
+    }
+
+
+    .profile-header {
+
+        padding:
+            28px 22px;
+
+        flex-direction:
+            column;
+
+        text-align:
+            center;
+
+    }
+
+
+    .security-status {
+
+        grid-template-columns:
+            1fr;
+
+        padding:
+            20px;
+
+    }
+
+
+    .information {
+
+        padding:
+            23px 20px;
+
+    }
+
+
+    .info-grid {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .profile-footer {
+
+        flex-direction:
+            column;
+
+        gap:
+            14px;
+
+        padding:
+            20px;
+
+    }
+
+
+    .actions {
+
+        width:
+            100%;
+
+    }
+
+
+    .button {
+
+        flex:
+            1;
+
+    }
+
+
+    .identity h2 {
+
+        font-size:
+            22px;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="profile-page">
+
+
+    <div class="container">
+
+
+        <!-- =================================
+             TOP BAR
+        ================================= -->
+
+        <div class="top-bar">
+
+
+            <a
+                href="{{ url_for('dashboard') }}"
+                class="back-link"
+            >
+
+                ← Back to Dashboard
+
+            </a>
+
+
+            <div class="system-online">
+
+                <span class="system-dot"></span>
+
+                SYSTEM ONLINE
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- =================================
+             PAGE HEADING
+        ================================= -->
+
+        <div class="page-heading">
+
+            <h1>
+                Security Profile
+            </h1>
+
+            <p>
+                Your identity within the Network Intrusion Detection System.
+            </p>
+
+        </div>
+
+
+
+        <!-- =================================
+             PROFILE CARD
+        ================================= -->
+
+        <div class="profile-card">
+
+
+            <!-- SCANNING LINE -->
+
+            <div class="scan-line"></div>
+
+
+
+            <!-- PROFILE HEADER -->
+
+            <div class="profile-header">
+
+
+                <div class="avatar-wrapper">
+
+
+                    <div class="avatar">
+
+                        {{ user.name[0].upper() }}
+
+                    </div>
+
+
+                    <div class="avatar-status"></div>
+
+
+                </div>
+
+
+
+                <div class="identity">
+
+
+                    <div class="identity-label">
+
+                        SECURITY IDENTITY
+
+                    </div>
+
+
+                    <h2>
+
+                        {{ user.name }}
+
+                    </h2>
+
+
+                    <div class="username">
+
+                        @{{ user.username }}
+
+                    </div>
+
+
+                    <div class="verified">
+
+                        <span class="verified-dot"></span>
+
+                        VERIFIED USER
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =================================
+                 SECURITY STATUS
+            ================================= -->
+
+            <div class="security-status">
+
+
+                <div class="status-card">
+
+
+                    <div class="status-icon">
+
+                        🛡
+
+                    </div>
+
+
+                    <div class="status-label">
+
+                        Account Security
+
+                    </div>
+
+
+                    <div class="status-value">
+
+                        Protected
+
+                    </div>
+
+
+                    <div class="status-description">
+
+                        Your account is securely authenticated.
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="status-card">
+
+
+                    <div class="status-icon">
+
+                        ⚡
+
+                    </div>
+
+
+                    <div class="status-label">
+
+                        Monitoring
+
+                    </div>
+
+
+                    <div class="status-value">
+
+                        Live Monitoring Enabled
+
+                    </div>
+
+
+                    <div class="status-description">
+
+                        NIDS detection services are active.
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =================================
+                 PERSONAL INFORMATION
+            ================================= -->
+
+            <div class="information">
+
+
+                <div class="section-heading">
+
+                    Personal Information
+
+                </div>
+
+
+                <div class="info-grid">
+
+
+                    <div class="info-item">
+
+
+                        <div class="info-label">
+
+                            Full Name
+
+                        </div>
+
+
+                        <div class="info-value">
+
+                            {{ user.name }}
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <div class="info-item">
+
+
+                        <div class="info-label">
+
+                            Username
+
+                        </div>
+
+
+                        <div class="info-value">
+
+                            @{{ user.username }}
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <div class="info-item">
+
+
+                        <div class="info-label">
+
+                            Email Address
+
+                        </div>
+
+
+                        <div class="info-value">
+
+                            {{ user.email }}
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- SECURITY CODE -->
+
+                <div class="security-code">
+
+                    <div>
+
+                        <span class="code-blue">
+                            USER_ID
+                        </span>
+
+                        ::
+
+                        AUTHENTICATED
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="code-blue">
+                            ACCESS
+                        </span>
+
+                        ::
+
+                        AUTHORIZED
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="code-green">
+                            STATUS
+                        </span>
+
+                        ::
+
+                        SECURE
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =================================
+                 FOOTER
+            ================================= -->
+
+            <div class="profile-footer">
+
+
+                <div class="footer-text">
+
+                    NIDS Security Monitoring System
+
+                </div>
+
+
+                <div class="actions">
+
+
+                    <a
+                        href="{{ url_for('dashboard') }}"
+                        class="button dashboard-button"
+                    >
+
+                        Dashboard
+
+                    </a>
+
+
+                    <a
+                        href="{{ url_for('logout') }}"
+                        class="button logout-button"
+                    >
+
+                        Logout
+
+                    </a>
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+</body>
+
+</html>
