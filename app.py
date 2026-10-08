@@ -77,9 +77,25 @@ db.init_app(app)
 
 def login_required():
 
-    return session.get(
-        "logged_in"
-    ) is True
+    if session.get("logged_in") is not True:
+        return False
+
+    user_id = session.get("user_id")
+
+    if not user_id:
+        session.clear()
+        return False
+
+    user = db.session.get(
+        User,
+        user_id
+    )
+
+    if not user:
+        session.clear()
+        return False
+
+    return True
 
 
 # ========================================
@@ -98,12 +114,6 @@ monitoring_users = set()
     methods=["GET", "POST"]
 )
 def login():
-
-    if session.get("logged_in"):
-
-        return redirect(
-            url_for("dashboard")
-        )
 
     if request.method == "POST":
 
@@ -172,7 +182,7 @@ def logout():
 )
 def signup():
 
-    if session.get("logged_in"):
+    if login_required():
 
         return redirect(
             url_for("dashboard")
@@ -205,10 +215,6 @@ def signup():
             ""
         )
 
-        # --------------------------------
-        # VALIDATION
-        # --------------------------------
-
         if (
             not name
             or not email
@@ -238,10 +244,6 @@ def signup():
                 )
             )
 
-        # --------------------------------
-        # CHECK USERNAME
-        # --------------------------------
-
         existing_username = User.query.filter_by(
             username=username
         ).first()
@@ -252,10 +254,6 @@ def signup():
                 "signup.html",
                 error="Username already exists."
             )
-
-        # --------------------------------
-        # CHECK EMAIL
-        # --------------------------------
 
         existing_email = User.query.filter_by(
             email=email
@@ -271,10 +269,6 @@ def signup():
                 )
             )
 
-        # --------------------------------
-        # CREATE USER
-        # --------------------------------
-
         password_hash = generate_password_hash(
             password
         )
@@ -287,7 +281,6 @@ def signup():
         )
 
         db.session.add(user)
-
         db.session.commit()
 
         return redirect(
@@ -406,10 +399,8 @@ def reset_password():
                 error="Passwords do not match."
             )
 
-        user.password_hash = (
-            generate_password_hash(
-                password
-            )
+        user.password_hash = generate_password_hash(
+            password
         )
 
         db.session.commit()
@@ -467,14 +458,11 @@ def profile():
 @app.route("/")
 def home():
 
-    if not login_required():
-
-        return redirect(
-            url_for("login")
-        )
+    # Main website URL always opens
+    # the login page.
 
     return redirect(
-        url_for("dashboard")
+        url_for("login")
     )
 
 
@@ -486,6 +474,23 @@ def home():
 def dashboard():
 
     if not login_required():
+
+        return redirect(
+            url_for("login")
+        )
+
+    user_id = session.get(
+        "user_id"
+    )
+
+    user = db.session.get(
+        User,
+        user_id
+    )
+
+    if not user:
+
+        session.clear()
 
         return redirect(
             url_for("login")
@@ -588,7 +593,6 @@ def start_monitoring():
 
     user_id = session["user_id"]
 
-    # Prevent duplicate monitoring
     if user_id in monitoring_users:
 
         return jsonify({
@@ -608,10 +612,10 @@ def start_monitoring():
         )
 
         thread = threading.Thread(
-    target=start_capture,
-    args=(user_id, app),
-    daemon=True
-)
+            target=start_capture,
+            args=(user_id, app),
+            daemon=True
+        )
 
         thread.start()
 
@@ -680,17 +684,14 @@ def api_dashboard():
 
     user_id = session["user_id"]
 
-    # Only this user's traffic
     total_traffic = Traffic.query.filter_by(
         user_id=user_id
     ).count()
 
-    # Only this user's attacks
     total_attacks = Alert.query.filter_by(
         user_id=user_id
     ).count()
 
-    # Only this user's unresolved alerts
     active_alerts = Alert.query.filter_by(
         user_id=user_id,
         status="Unresolved"
@@ -744,23 +745,19 @@ def api_dashboard():
                 2
             ),
 
-        "latest_traffic": (
+        "latest_traffic":
+            (
+                latest_traffic.timestamp
+                if latest_traffic
+                else None
+            ),
 
-            latest_traffic.timestamp
-
-            if latest_traffic
-
-            else None
-        ),
-
-        "latest_attack": (
-
-            latest_attack.timestamp
-
-            if latest_attack
-
-            else None
-        )
+        "latest_attack":
+            (
+                latest_attack.timestamp
+                if latest_attack
+                else None
+            )
     })
 
 
@@ -1236,15 +1233,10 @@ def api_logs():
         else:
 
             result = "Normal"
-
             attack_type = "-"
-
             confidence = 0
-
             risk_score = 0
-
             severity = "Low"
-
             status = "Normal"
 
         data.append({
@@ -1317,10 +1309,6 @@ def api_analysis():
 
     user_id = session["user_id"]
 
-    # ----------------------------------------
-    # SUMMARY
-    # ----------------------------------------
-
     total_traffic = Traffic.query.filter_by(
         user_id=user_id
     ).count()
@@ -1345,10 +1333,6 @@ def api_analysis():
 
         attack_percentage = 0
 
-    # ----------------------------------------
-    # SEVERITY
-    # ----------------------------------------
-
     high = Alert.query.filter_by(
         user_id=user_id,
         severity="High"
@@ -1363,10 +1347,6 @@ def api_analysis():
         user_id=user_id,
         severity="Low"
     ).count()
-
-    # ----------------------------------------
-    # PROTOCOLS
-    # ----------------------------------------
 
     protocol_rows = db.session.query(
         Traffic.protocol,
@@ -1386,24 +1366,17 @@ def api_analysis():
         )
 
         if protocol_name == "6":
-
             protocol_name = "TCP"
 
         elif protocol_name == "17":
-
             protocol_name = "UDP"
 
         elif protocol_name == "1":
-
             protocol_name = "ICMP"
 
         protocols[
             protocol_name
         ] = count
-
-    # ----------------------------------------
-    # TOP ATTACK SOURCES
-    # ----------------------------------------
 
     source_rows = db.session.query(
         Alert.source_ip,
@@ -1429,10 +1402,6 @@ def api_analysis():
                 count
         })
 
-    # ----------------------------------------
-    # TOP DESTINATION PORTS
-    # ----------------------------------------
-
     port_rows = db.session.query(
         Alert.destination_port,
         func.count(Alert.id)
@@ -1457,10 +1426,6 @@ def api_analysis():
                 count
         })
 
-    # ----------------------------------------
-    # ATTACK TYPES
-    # ----------------------------------------
-
     attack_type_rows = db.session.query(
         Alert.attack_type,
         func.count(Alert.id)
@@ -1484,10 +1449,6 @@ def api_analysis():
             "count":
                 count
         })
-
-    # ----------------------------------------
-    # RECENT ATTACKS
-    # ----------------------------------------
 
     recent_alerts = Alert.query.filter_by(
         user_id=user_id
@@ -1591,10 +1552,6 @@ def api_reports():
 
     user_id = session["user_id"]
 
-    # ----------------------------------------
-    # SUMMARY
-    # ----------------------------------------
-
     total_traffic = Traffic.query.filter_by(
         user_id=user_id
     ).count()
@@ -1619,10 +1576,6 @@ def api_reports():
 
         attack_percentage = 0
 
-    # ----------------------------------------
-    # SEVERITY
-    # ----------------------------------------
-
     high = Alert.query.filter_by(
         user_id=user_id,
         severity="High"
@@ -1637,10 +1590,6 @@ def api_reports():
         user_id=user_id,
         severity="Low"
     ).count()
-
-    # ----------------------------------------
-    # PROTOCOLS
-    # ----------------------------------------
 
     protocol_rows = db.session.query(
         Traffic.protocol,
@@ -1660,24 +1609,17 @@ def api_reports():
         )
 
         if protocol_name == "6":
-
             protocol_name = "TCP"
 
         elif protocol_name == "17":
-
             protocol_name = "UDP"
 
         elif protocol_name == "1":
-
             protocol_name = "ICMP"
 
         protocols[
             protocol_name
         ] = count
-
-    # ----------------------------------------
-    # TOP ATTACK SOURCES
-    # ----------------------------------------
 
     source_rows = db.session.query(
         Alert.source_ip,
@@ -1703,10 +1645,6 @@ def api_reports():
                 count
         })
 
-    # ----------------------------------------
-    # TOP DESTINATION PORTS
-    # ----------------------------------------
-
     port_rows = db.session.query(
         Alert.destination_port,
         func.count(Alert.id)
@@ -1731,10 +1669,6 @@ def api_reports():
                 count
         })
 
-    # ----------------------------------------
-    # RECENT ATTACKS
-    # ----------------------------------------
-
     recent_alerts = Alert.query.filter_by(
         user_id=user_id
     ).order_by(
@@ -1750,76 +1684,60 @@ def api_reports():
             "id":
                 alert.id,
 
-            "timestamp": (
-
-                alert.timestamp.strftime(
-                    "%Y-%m-%d %H:%M:%S"
-                )
-
-                if alert.timestamp
-
-                else "-"
-            ),
+            "timestamp":
+                (
+                    alert.timestamp.strftime(
+                        "%Y-%m-%d %H:%M:%S"
+                    )
+                    if alert.timestamp
+                    else "-"
+                ),
 
             "source_ip":
                 alert.source_ip or "-",
 
-            "destination_ip": (
+            "destination_ip":
+                alert.destination_ip or "-",
 
-                alert.destination_ip
-                or "-"
-            ),
+            "source_port":
+                (
+                    alert.source_port
+                    if alert.source_port is not None
+                    else "-"
+                ),
 
-            "source_port": (
-
-                alert.source_port
-
-                if alert.source_port is not None
-
-                else "-"
-            ),
-
-            "destination_port": (
-
-                alert.destination_port
-
-                if alert.destination_port is not None
-
-                else "-"
-            ),
+            "destination_port":
+                (
+                    alert.destination_port
+                    if alert.destination_port is not None
+                    else "-"
+                ),
 
             "protocol":
                 alert.protocol or "-",
 
-            "attack_type": (
+            "attack_type":
+                alert.attack_type or "-",
 
-                alert.attack_type
-                or "-"
-            ),
+            "confidence":
+                (
+                    round(
+                        alert.confidence,
+                        2
+                    )
+                    if alert.confidence is not None
+                    else 0
+                ),
 
-            "confidence": (
-
-                round(
-                    alert.confidence,
-                    2
-                )
-
-                if alert.confidence is not None
-
-                else 0
-            ),
-
-            "risk_score": (
-
-                round(
-                    alert.risk_score,
-                    2
-                )
-
-                if alert.risk_score is not None
-
-                else 0
-            ),
+            "risk_score":
+                (
+                    round(
+                        alert.risk_score,
+                        2
+                    )
+                    if alert.risk_score is not None
+                    else 0
+                ),
 
             "severity":
                 alert.severity or "-",
@@ -1890,5 +1808,6 @@ with app.app_context():
 if __name__ == "__main__":
 
     app.run(
-        debug=True
+        debug=True,
+        use_reloader=False
     )
