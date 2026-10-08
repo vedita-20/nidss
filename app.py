@@ -25,8 +25,11 @@ from werkzeug.security import (
 )
 
 import os
+import threading
 
 from sqlalchemy import func
+
+from nids.packet_capture import start_capture
 
 
 # ========================================
@@ -73,17 +76,31 @@ db.init_app(app)
 # ========================================
 
 def login_required():
-    return session.get("logged_in") is True
+
+    return session.get(
+        "logged_in"
+    ) is True
+
+
+# ========================================
+# LIVE MONITORING STATE
+# ========================================
+
+monitoring_users = set()
 
 
 # ========================================
 # LOGIN
 # ========================================
 
-@app.route("/login", methods=["GET", "POST"])
+@app.route(
+    "/login",
+    methods=["GET", "POST"]
+)
 def login():
 
     if session.get("logged_in"):
+
         return redirect(
             url_for("dashboard")
         )
@@ -156,6 +173,7 @@ def logout():
 def signup():
 
     if session.get("logged_in"):
+
         return redirect(
             url_for("dashboard")
         )
@@ -269,6 +287,7 @@ def signup():
         )
 
         db.session.add(user)
+
         db.session.commit()
 
         return redirect(
@@ -388,7 +407,9 @@ def reset_password():
             )
 
         user.password_hash = (
-            generate_password_hash(password)
+            generate_password_hash(
+                password
+            )
         )
 
         db.session.commit()
@@ -440,10 +461,28 @@ def profile():
 
 
 # ========================================
-# HOME / DASHBOARD
+# HOME
 # ========================================
 
 @app.route("/")
+def home():
+
+    if not login_required():
+
+        return redirect(
+            url_for("login")
+        )
+
+    return redirect(
+        url_for("dashboard")
+    )
+
+
+# ========================================
+# DASHBOARD
+# ========================================
+
+@app.route("/dashboard")
 def dashboard():
 
     if not login_required():
@@ -532,6 +571,100 @@ def reports():
 
 
 # ========================================
+# START LIVE MONITORING
+# ========================================
+
+@app.route(
+    "/api/monitoring/start",
+    methods=["POST"]
+)
+def start_monitoring():
+
+    if not login_required():
+
+        return jsonify({
+            "error": "Authentication required"
+        }), 401
+
+    user_id = session["user_id"]
+
+    # Prevent duplicate monitoring
+    if user_id in monitoring_users:
+
+        return jsonify({
+
+            "message":
+                "Monitoring is already running.",
+
+            "status":
+                "running"
+
+        })
+
+    try:
+
+        monitoring_users.add(
+            user_id
+        )
+
+        thread = threading.Thread(
+    target=start_capture,
+    args=(user_id, app),
+    daemon=True
+)
+
+        thread.start()
+
+        return jsonify({
+
+            "message":
+                "Live monitoring started.",
+
+            "status":
+                "running"
+
+        })
+
+    except Exception as e:
+
+        monitoring_users.discard(
+            user_id
+        )
+
+        return jsonify({
+
+            "error":
+                f"Failed to start monitoring: {str(e)}"
+
+        }), 500
+
+
+# ========================================
+# MONITORING STATUS
+# ========================================
+
+@app.route(
+    "/api/monitoring/status"
+)
+def monitoring_status():
+
+    if not login_required():
+
+        return jsonify({
+            "error": "Authentication required"
+        }), 401
+
+    user_id = session["user_id"]
+
+    return jsonify({
+
+        "running":
+            user_id in monitoring_users
+
+    })
+
+
+# ========================================
 # DASHBOARD STATISTICS API
 # ========================================
 
@@ -541,14 +674,25 @@ def api_dashboard():
     if not login_required():
 
         return jsonify({
-            "error": "Authentication required"
+            "error":
+                "Authentication required"
         }), 401
 
-    total_traffic = Traffic.query.count()
+    user_id = session["user_id"]
 
-    total_attacks = Alert.query.count()
+    # Only this user's traffic
+    total_traffic = Traffic.query.filter_by(
+        user_id=user_id
+    ).count()
 
+    # Only this user's attacks
+    total_attacks = Alert.query.filter_by(
+        user_id=user_id
+    ).count()
+
+    # Only this user's unresolved alerts
     active_alerts = Alert.query.filter_by(
+        user_id=user_id,
         status="Unresolved"
     ).count()
 
@@ -568,11 +712,15 @@ def api_dashboard():
 
         attack_percentage = 0
 
-    latest_traffic = Traffic.query.order_by(
+    latest_traffic = Traffic.query.filter_by(
+        user_id=user_id
+    ).order_by(
         Traffic.timestamp.desc()
     ).first()
 
-    latest_attack = Alert.query.order_by(
+    latest_attack = Alert.query.filter_by(
+        user_id=user_id
+    ).order_by(
         Alert.timestamp.desc()
     ).first()
 
@@ -597,14 +745,20 @@ def api_dashboard():
             ),
 
         "latest_traffic": (
+
             latest_traffic.timestamp
+
             if latest_traffic
+
             else None
         ),
 
         "latest_attack": (
+
             latest_attack.timestamp
+
             if latest_attack
+
             else None
         )
     })
@@ -614,20 +768,29 @@ def api_dashboard():
 # DASHBOARD TRENDS API
 # ========================================
 
-@app.route("/api/dashboard/trends")
+@app.route(
+    "/api/dashboard/trends"
+)
 def dashboard_trends():
 
     if not login_required():
 
         return jsonify({
-            "error": "Authentication required"
+            "error":
+                "Authentication required"
         }), 401
 
-    traffic_records = Traffic.query.order_by(
+    user_id = session["user_id"]
+
+    traffic_records = Traffic.query.filter_by(
+        user_id=user_id
+    ).order_by(
         Traffic.timestamp.asc()
     ).limit(20).all()
 
-    alert_records = Alert.query.order_by(
+    alert_records = Alert.query.filter_by(
+        user_id=user_id
+    ).order_by(
         Alert.timestamp.asc()
     ).limit(20).all()
 
@@ -638,7 +801,9 @@ def dashboard_trends():
         start=1
     ):
 
-        traffic_trend.append(index)
+        traffic_trend.append(
+            index
+        )
 
     attack_trend = []
 
@@ -647,15 +812,21 @@ def dashboard_trends():
         start=1
     ):
 
-        attack_trend.append(index)
+        attack_trend.append(
+            index
+        )
 
     if not traffic_trend:
+
         traffic_trend = [0]
 
     if not attack_trend:
+
         attack_trend = [0]
 
-    while len(attack_trend) < len(traffic_trend):
+    while len(attack_trend) < len(
+        traffic_trend
+    ):
 
         attack_trend.append(
             attack_trend[-1]
@@ -687,6 +858,7 @@ def dashboard_trends():
         )
 
     active_alerts = Alert.query.filter_by(
+        user_id=user_id,
         status="Unresolved"
     ).count()
 
@@ -724,13 +896,16 @@ def resolve_alert(alert_id):
     if not login_required():
 
         return jsonify({
-            "error": "Authentication required"
+            "error":
+                "Authentication required"
         }), 401
 
-    alert = db.session.get(
-        Alert,
-        alert_id
-    )
+    user_id = session["user_id"]
+
+    alert = Alert.query.filter_by(
+        id=alert_id,
+        user_id=user_id
+    ).first()
 
     if not alert:
 
@@ -757,7 +932,7 @@ def resolve_alert(alert_id):
 
 
 # ========================================
-# SHAP EXPLANATION API
+# SHAP EXPLANATIONS API
 # ========================================
 
 @app.route(
@@ -765,34 +940,26 @@ def resolve_alert(alert_id):
 )
 def api_explanations(alert_id):
 
-    # --------------------------------
-    # AUTHENTICATION
-    # --------------------------------
-
     if not login_required():
 
         return jsonify({
-            "error": "Authentication required"
+            "error":
+                "Authentication required"
         }), 401
 
-    # --------------------------------
-    # FIND ALERT
-    # --------------------------------
+    user_id = session["user_id"]
 
-    alert = db.session.get(
-        Alert,
-        alert_id
-    )
+    alert = Alert.query.filter_by(
+        id=alert_id,
+        user_id=user_id
+    ).first()
 
     if not alert:
 
         return jsonify({
-            "error": "Alert not found"
+            "error":
+                "Alert not found"
         }), 404
-
-    # --------------------------------
-    # GET SAVED SHAP EXPLANATIONS
-    # --------------------------------
 
     explanations = Explanation.query.filter_by(
         alert_id=alert_id
@@ -802,24 +969,21 @@ def api_explanations(alert_id):
         ).desc()
     ).all()
 
-    # --------------------------------
-    # NO EXPLANATIONS FOUND
-    # --------------------------------
-
     if not explanations:
 
         return jsonify({
-            "error": (
-                "No SHAP explanations "
-                "found for this alert."
-            ),
-            "alert_id": alert_id,
-            "explanations": []
-        }), 404
 
-    # --------------------------------
-    # CONVERT TO JSON
-    # --------------------------------
+            "error":
+                "No SHAP explanations found "
+                "for this alert.",
+
+            "alert_id":
+                alert_id,
+
+            "explanations":
+                []
+
+        }), 404
 
     data = []
 
@@ -853,12 +1017,17 @@ def api_traffic():
     if not login_required():
 
         return jsonify({
-            "error": "Authentication required"
+            "error":
+                "Authentication required"
         }), 401
 
-    records = Traffic.query.order_by(
+    user_id = session["user_id"]
+
+    records = Traffic.query.filter_by(
+        user_id=user_id
+    ).order_by(
         Traffic.timestamp.desc()
-    ).limit(20).all()
+    ).all()
 
     data = []
 
@@ -910,12 +1079,17 @@ def api_alerts():
     if not login_required():
 
         return jsonify({
-            "error": "Authentication required"
+            "error":
+                "Authentication required"
         }), 401
 
-    records = Alert.query.order_by(
+    user_id = session["user_id"]
+
+    records = Alert.query.filter_by(
+        user_id=user_id
+    ).order_by(
         Alert.timestamp.desc()
-    ).limit(20).all()
+    ).all()
 
     data = []
 
@@ -973,14 +1147,21 @@ def api_logs():
     if not login_required():
 
         return jsonify({
-            "error": "Authentication required"
+            "error":
+                "Authentication required"
         }), 401
 
-    traffic_records = Traffic.query.order_by(
+    user_id = session["user_id"]
+
+    traffic_records = Traffic.query.filter_by(
+        user_id=user_id
+    ).order_by(
         Traffic.timestamp.desc()
     ).limit(50).all()
 
-    alert_records = Alert.query.order_by(
+    alert_records = Alert.query.filter_by(
+        user_id=user_id
+    ).order_by(
         Alert.timestamp.desc()
     ).all()
 
@@ -1024,7 +1205,9 @@ def api_logs():
             row.destination_port
         )
 
-        alert_info = alert_map.get(key)
+        alert_info = alert_map.get(
+            key
+        )
 
         if alert_info:
 
@@ -1128,12 +1311,23 @@ def api_analysis():
     if not login_required():
 
         return jsonify({
-            "error": "Authentication required"
+            "error":
+                "Authentication required"
         }), 401
 
-    total_traffic = Traffic.query.count()
+    user_id = session["user_id"]
 
-    total_attacks = Alert.query.count()
+    # ----------------------------------------
+    # SUMMARY
+    # ----------------------------------------
+
+    total_traffic = Traffic.query.filter_by(
+        user_id=user_id
+    ).count()
+
+    total_attacks = Alert.query.filter_by(
+        user_id=user_id
+    ).count()
 
     normal_traffic = (
         total_traffic -
@@ -1151,21 +1345,34 @@ def api_analysis():
 
         attack_percentage = 0
 
+    # ----------------------------------------
+    # SEVERITY
+    # ----------------------------------------
+
     high = Alert.query.filter_by(
+        user_id=user_id,
         severity="High"
     ).count()
 
     medium = Alert.query.filter_by(
+        user_id=user_id,
         severity="Medium"
     ).count()
 
     low = Alert.query.filter_by(
+        user_id=user_id,
         severity="Low"
     ).count()
+
+    # ----------------------------------------
+    # PROTOCOLS
+    # ----------------------------------------
 
     protocol_rows = db.session.query(
         Traffic.protocol,
         func.count(Traffic.id)
+    ).filter(
+        Traffic.user_id == user_id
     ).group_by(
         Traffic.protocol
     ).all()
@@ -1174,22 +1381,35 @@ def api_analysis():
 
     for protocol, count in protocol_rows:
 
-        protocol_name = str(protocol)
+        protocol_name = str(
+            protocol
+        )
 
         if protocol_name == "6":
+
             protocol_name = "TCP"
 
         elif protocol_name == "17":
+
             protocol_name = "UDP"
 
         elif protocol_name == "1":
+
             protocol_name = "ICMP"
 
-        protocols[protocol_name] = count
+        protocols[
+            protocol_name
+        ] = count
+
+    # ----------------------------------------
+    # TOP ATTACK SOURCES
+    # ----------------------------------------
 
     source_rows = db.session.query(
         Alert.source_ip,
         func.count(Alert.id)
+    ).filter(
+        Alert.user_id == user_id
     ).group_by(
         Alert.source_ip
     ).order_by(
@@ -1209,9 +1429,15 @@ def api_analysis():
                 count
         })
 
+    # ----------------------------------------
+    # TOP DESTINATION PORTS
+    # ----------------------------------------
+
     port_rows = db.session.query(
         Alert.destination_port,
         func.count(Alert.id)
+    ).filter(
+        Alert.user_id == user_id
     ).group_by(
         Alert.destination_port
     ).order_by(
@@ -1231,9 +1457,15 @@ def api_analysis():
                 count
         })
 
+    # ----------------------------------------
+    # ATTACK TYPES
+    # ----------------------------------------
+
     attack_type_rows = db.session.query(
         Alert.attack_type,
         func.count(Alert.id)
+    ).filter(
+        Alert.user_id == user_id
     ).group_by(
         Alert.attack_type
     ).order_by(
@@ -1253,7 +1485,13 @@ def api_analysis():
                 count
         })
 
-    recent_alerts = Alert.query.order_by(
+    # ----------------------------------------
+    # RECENT ATTACKS
+    # ----------------------------------------
+
+    recent_alerts = Alert.query.filter_by(
+        user_id=user_id
+    ).order_by(
         Alert.timestamp.desc()
     ).limit(10).all()
 
@@ -1347,12 +1585,23 @@ def api_reports():
     if not login_required():
 
         return jsonify({
-            "error": "Authentication required"
+            "error":
+                "Authentication required"
         }), 401
 
-    total_traffic = Traffic.query.count()
+    user_id = session["user_id"]
 
-    total_attacks = Alert.query.count()
+    # ----------------------------------------
+    # SUMMARY
+    # ----------------------------------------
+
+    total_traffic = Traffic.query.filter_by(
+        user_id=user_id
+    ).count()
+
+    total_attacks = Alert.query.filter_by(
+        user_id=user_id
+    ).count()
 
     normal_traffic = (
         total_traffic -
@@ -1370,21 +1619,34 @@ def api_reports():
 
         attack_percentage = 0
 
+    # ----------------------------------------
+    # SEVERITY
+    # ----------------------------------------
+
     high = Alert.query.filter_by(
+        user_id=user_id,
         severity="High"
     ).count()
 
     medium = Alert.query.filter_by(
+        user_id=user_id,
         severity="Medium"
     ).count()
 
     low = Alert.query.filter_by(
+        user_id=user_id,
         severity="Low"
     ).count()
+
+    # ----------------------------------------
+    # PROTOCOLS
+    # ----------------------------------------
 
     protocol_rows = db.session.query(
         Traffic.protocol,
         func.count(Traffic.id)
+    ).filter(
+        Traffic.user_id == user_id
     ).group_by(
         Traffic.protocol
     ).all()
@@ -1393,22 +1655,35 @@ def api_reports():
 
     for protocol, count in protocol_rows:
 
-        protocol_name = str(protocol)
+        protocol_name = str(
+            protocol
+        )
 
         if protocol_name == "6":
+
             protocol_name = "TCP"
 
         elif protocol_name == "17":
+
             protocol_name = "UDP"
 
         elif protocol_name == "1":
+
             protocol_name = "ICMP"
 
-        protocols[protocol_name] = count
+        protocols[
+            protocol_name
+        ] = count
+
+    # ----------------------------------------
+    # TOP ATTACK SOURCES
+    # ----------------------------------------
 
     source_rows = db.session.query(
         Alert.source_ip,
         func.count(Alert.id)
+    ).filter(
+        Alert.user_id == user_id
     ).group_by(
         Alert.source_ip
     ).order_by(
@@ -1428,9 +1703,15 @@ def api_reports():
                 count
         })
 
+    # ----------------------------------------
+    # TOP DESTINATION PORTS
+    # ----------------------------------------
+
     port_rows = db.session.query(
         Alert.destination_port,
         func.count(Alert.id)
+    ).filter(
+        Alert.user_id == user_id
     ).group_by(
         Alert.destination_port
     ).order_by(
@@ -1450,7 +1731,13 @@ def api_reports():
                 count
         })
 
-    recent_alerts = Alert.query.order_by(
+    # ----------------------------------------
+    # RECENT ATTACKS
+    # ----------------------------------------
+
+    recent_alerts = Alert.query.filter_by(
+        user_id=user_id
+    ).order_by(
         Alert.timestamp.desc()
     ).limit(20).all()
 
@@ -1486,14 +1773,18 @@ def api_reports():
             "source_port": (
 
                 alert.source_port
+
                 if alert.source_port is not None
+
                 else "-"
             ),
 
             "destination_port": (
 
                 alert.destination_port
+
                 if alert.destination_port is not None
+
                 else "-"
             ),
 
@@ -1514,6 +1805,7 @@ def api_reports():
                 )
 
                 if alert.confidence is not None
+
                 else 0
             ),
 
@@ -1525,6 +1817,7 @@ def api_reports():
                 )
 
                 if alert.risk_score is not None
+
                 else 0
             ),
 
@@ -1599,4 +1892,3 @@ if __name__ == "__main__":
     app.run(
         debug=True
     )
-

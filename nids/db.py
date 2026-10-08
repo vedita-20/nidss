@@ -46,48 +46,23 @@ class User(db.Model):
 class Traffic(db.Model):
     __tablename__ = "traffic"
 
-    id = db.Column(
+    id = db.Column(db.Integer, primary_key=True)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user_id = db.Column(
         db.Integer,
-        primary_key=True
+        db.ForeignKey("users.id"),
+        nullable=True
     )
 
-    timestamp = db.Column(
-        db.DateTime,
-        default=datetime.utcnow
-    )
-
-    source_ip = db.Column(
-        db.String(45)
-    )
-
-    destination_ip = db.Column(
-        db.String(45)
-    )
-
-    source_port = db.Column(
-        db.Integer
-    )
-
-    destination_port = db.Column(
-        db.Integer
-    )
-
-    protocol = db.Column(
-        db.String(20)
-    )
-
-    packet_count = db.Column(
-        db.Integer
-    )
-
-    flow_duration = db.Column(
-        db.Float
-    )
-
-    total_bytes = db.Column(
-        db.Integer
-    )
-
+    source_ip = db.Column(db.String(45))
+    destination_ip = db.Column(db.String(45))
+    source_port = db.Column(db.Integer)
+    destination_port = db.Column(db.Integer)
+    protocol = db.Column(db.String(20))
+    packet_count = db.Column(db.Integer)
+    flow_duration = db.Column(db.Float)
+    total_bytes = db.Column(db.Integer)
 
 # =========================
 # ALERT MODEL
@@ -95,57 +70,25 @@ class Traffic(db.Model):
 class Alert(db.Model):
     __tablename__ = "alerts"
 
-    id = db.Column(
+    id = db.Column(db.Integer, primary_key=True)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user_id = db.Column(
         db.Integer,
-        primary_key=True
+        db.ForeignKey("users.id"),
+        nullable=True
     )
 
-    timestamp = db.Column(
-        db.DateTime,
-        default=datetime.utcnow
-    )
-
-    source_ip = db.Column(
-        db.String(45)
-    )
-
-    destination_ip = db.Column(
-        db.String(45)
-    )
-
-    source_port = db.Column(
-        db.Integer
-    )
-
-    destination_port = db.Column(
-        db.Integer
-    )
-
-    protocol = db.Column(
-        db.String(20)
-    )
-
-    attack_type = db.Column(
-        db.String(100)
-    )
-
-    confidence = db.Column(
-        db.Float
-    )
-
-    risk_score = db.Column(
-        db.Float
-    )
-
-    severity = db.Column(
-        db.String(20)
-    )
-
-    status = db.Column(
-        db.String(30),
-        default="Unresolved"
-    )
-
+    source_ip = db.Column(db.String(45))
+    destination_ip = db.Column(db.String(45))
+    source_port = db.Column(db.Integer)
+    destination_port = db.Column(db.Integer)
+    protocol = db.Column(db.String(20))
+    attack_type = db.Column(db.String(100))
+    confidence = db.Column(db.Float)
+    risk_score = db.Column(db.Float)
+    severity = db.Column(db.String(20))
+    status = db.Column(db.String(30), default="Unresolved")
 
 # =========================
 # SHAP EXPLANATION MODEL

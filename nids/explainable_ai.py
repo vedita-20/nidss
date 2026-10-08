@@ -2,7 +2,7 @@ import shap
 import pandas as pd
 import numpy as np
 
-from detector import model, selected_features
+from nids.detector import model, selected_features
 
 
 # ============================================================

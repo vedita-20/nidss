@@ -51,37 +51,31 @@ def get_packet_connection_info(packet):
     )
 
 
-def process_packet(packet):
+def process_packet(packet, user_id, app):
 
     try:
-
-        # --------------------------------
-        # GET ACTUAL PACKET INFORMATION
-        # --------------------------------
 
         connection = get_packet_connection_info(packet)
 
         if connection is None:
             return
 
-        source_ip, destination_ip, source_port, destination_port = connection
+        (
+            source_ip,
+            destination_ip,
+            source_port,
+            destination_port
+        ) = connection
 
-
-        # --------------------------------
-        # ADD PACKET TO FLOW
-        # --------------------------------
 
         flow_key, packet_count = add_packet(packet)
 
         if flow_key is None:
             return
 
+
         protocol = flow_key[4]
 
-
-        # --------------------------------
-        # DISPLAY PACKET
-        # --------------------------------
 
         print(
             f"\n[PACKET] "
@@ -92,10 +86,6 @@ def process_packet(packet):
         )
 
 
-        # --------------------------------
-        # DETECT EVERY 10 PACKETS
-        # --------------------------------
-
         if packet_count % PACKETS_PER_CHECK != 0:
             return
 
@@ -103,103 +93,101 @@ def process_packet(packet):
         print("\n[DETECTION] Analyzing network flow...")
 
 
-        # --------------------------------
-        # EXTRACT FEATURES
-        # --------------------------------
-
         features = get_features_for_flow(flow_key)
-
-
-        # --------------------------------
-        # XGBOOST DETECTION
-        # --------------------------------
 
         result = detect(features)
 
-
-        # --------------------------------
-        # CALCULATE FLOW INFORMATION
-        # --------------------------------
 
         flow_duration = features.get(
             "Flow Duration",
             0
         )
 
+
         total_fwd_bytes = features.get(
             "Total Length of Fwd Packets",
             0
         )
+
 
         total_bwd_bytes = features.get(
             "Total Length of Bwd Packets",
             0
         )
 
+
         total_bytes = int(
-            total_fwd_bytes + total_bwd_bytes
+            total_fwd_bytes +
+            total_bwd_bytes
         )
 
-
-        # --------------------------------
-        # DISPLAY RESULT
-        # --------------------------------
 
         print("\n")
         print("=" * 60)
         print("NIDS DETECTION RESULT")
         print("=" * 60)
 
+
+        print(
+            f"User ID     : {user_id}"
+        )
+
+
         print(
             f"Source      : "
             f"{source_ip}:{source_port}"
         )
+
 
         print(
             f"Destination : "
             f"{destination_ip}:{destination_port}"
         )
 
+
         print(
             f"Protocol    : {protocol}"
         )
+
 
         print(
             f"Prediction  : "
             f"{result['prediction']}"
         )
 
+
         print(
             f"Confidence  : "
             f"{result['confidence']}%"
         )
+
 
         print(
             f"Normal Prob : "
             f"{result['normal_probability']}%"
         )
 
+
         print(
             f"Attack Prob : "
             f"{result['attack_probability']}%"
         )
+
 
         print(
             f"Risk Score  : "
             f"{result['risk_score']}"
         )
 
+
         print(
             f"Severity    : "
             f"{result['severity']}"
         )
 
+
         print("=" * 60)
 
-
-        # --------------------------------
-        # DISPLAY FEATURES
-        # --------------------------------
 
         print("\nFeatures used by XGBoost:")
 
@@ -210,20 +198,29 @@ def process_packet(packet):
             )
 
 
-        # --------------------------------
-        # SAVE TO NEON DATABASE
-        # --------------------------------
-
         save_detection(
+
             source_ip=source_ip,
+
             destination_ip=destination_ip,
+
             source_port=source_port,
+
             destination_port=destination_port,
+
             protocol=protocol,
+
             packet_count=packet_count,
+
             flow_duration=flow_duration,
+
             total_bytes=total_bytes,
-            result=result
+
+            result=result,
+
+            user_id=user_id,
+
+            app=app
         )
 
 
@@ -234,26 +231,35 @@ def process_packet(packet):
         )
 
 
-def start_capture():
+def start_capture(user_id, app):
 
     print("\n")
     print("=" * 60)
     print("NIDS LIVE PACKET CAPTURE")
     print("=" * 60)
 
+
+    print(
+        f"\nMonitoring for logged-in user ID: {user_id}"
+    )
+
+
     print(
         "\nStarting network monitoring..."
     )
 
+
     print(
         "Press CTRL+C to stop."
     )
+
 
     print(
         f"\nDetection interval: "
         f"every {PACKETS_PER_CHECK} "
         f"packets per flow."
     )
+
 
     print(
         "\nWaiting for network traffic...\n"
@@ -263,7 +269,11 @@ def start_capture():
     try:
 
         sniff(
-            prn=process_packet,
+            prn=lambda packet: process_packet(
+                packet,
+                user_id,
+                app
+            ),
             store=False
         )
 
@@ -291,8 +301,3 @@ def start_capture():
         print(
             f"\n[ERROR] Packet capture failed: {e}"
         )
-
-
-if __name__ == "__main__":
-
-    start_capture()

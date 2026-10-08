@@ -1,5 +1,3 @@
-from app import app
-
 from nids.db import (
     db,
     Traffic,
@@ -19,10 +17,15 @@ def save_detection(
     packet_count,
     flow_duration,
     total_bytes,
-    result
+    result,
+    user_id,
+    app
 ):
-    # Flask application context stays active
-    # for the entire database operation.
+    """
+    Save traffic, attack alert and SHAP explanations
+    using the Flask application context passed from app.py.
+    """
+
     with app.app_context():
 
         try:
@@ -32,6 +35,7 @@ def save_detection(
             # --------------------------------
 
             traffic = Traffic(
+                user_id=user_id,
                 source_ip=source_ip,
                 destination_ip=destination_ip,
                 source_port=source_port,
@@ -51,6 +55,7 @@ def save_detection(
             if result["prediction"] == "Attack":
 
                 alert = Alert(
+                    user_id=user_id,
                     source_ip=source_ip,
                     destination_ip=destination_ip,
                     source_port=source_port,
@@ -65,7 +70,7 @@ def save_detection(
 
                 db.session.add(alert)
 
-                # Generate the Alert ID
+                # Generate Alert ID
                 db.session.flush()
 
                 print("\n[ALERT] Attack detected.")
@@ -129,8 +134,6 @@ def save_detection(
 
         except Exception as e:
 
-            # IMPORTANT:
-            # Rollback happens INSIDE app context.
             db.session.rollback()
 
             print(
