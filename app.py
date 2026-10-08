@@ -642,7 +642,29 @@ def start_monitoring():
 
         }), 500
 
+@app.route("/api/agent/heartbeat", methods=["POST"])
+def agent_heartbeat():
 
+    data = request.get_json(silent=True) or {}
+
+    device_name = data.get("device_name")
+    device_id = data.get("device_id")
+
+    if not device_name or not device_id:
+        return jsonify({
+            "error": "device_name and device_id are required"
+        }), 400
+
+    print(
+        f"[AGENT] Heartbeat received from "
+        f"{device_name} ({device_id})"
+    )
+
+    return jsonify({
+        "success": True,
+        "message": "Agent connected successfully",
+        "device_id": device_id
+    })
 # ========================================
 # MONITORING STATUS
 # ========================================
