@@ -744,7 +744,65 @@ def resolve_alert(alert_id):
             alert.status
     })
 
+# ========================================
+# SHAP EXPLANATIONS API
+# ========================================
 
+@app.route("/api/explanations/<int:alert_id>")
+def api_explanations(alert_id):
+
+    if not login_required():
+        return jsonify({
+            "error": "Authentication required"
+        }), 401
+
+    from nids.db import Explanation
+
+    alert = db.session.get(
+        Alert,
+        alert_id
+    )
+
+    if not alert:
+        return jsonify({
+            "error": "Alert not found"
+        }), 404
+
+    explanations = Explanation.query.filter_by(
+        alert_id=alert_id
+    ).order_by(
+        func.abs(
+            Explanation.shap_value
+        ).desc()
+    ).all()
+
+    if not explanations:
+        return jsonify({
+            "error": "No SHAP explanations found for this alert.",
+            "alert_id": alert_id,
+            "explanations": []
+        }), 404
+
+    data = []
+
+    for explanation in explanations:
+
+        data.append({
+
+            "feature_name":
+                explanation.feature_name,
+
+            "feature_value":
+                explanation.feature_value,
+
+            "shap_value":
+                explanation.shap_value,
+
+            "contribution":
+                explanation.contribution
+        })
+
+    return jsonify(data)
 # ========================================
 # RECENT TRAFFIC API
 # ========================================
