@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -172,6 +173,7 @@ body {
         background 0.2s ease;
 
 }
+
 
 .profile-section:hover {
 
@@ -959,554 +961,7 @@ body {
 /* =================================
    PANEL
 ================================= */
-/* =========================================================
-   LOGS PAGE ANIMATIONS
-   ========================================================= */
 
-/* PAGE LOAD */
-body {
-    animation: pageFadeIn 0.45s ease-out both;
-}
-
-@keyframes pageFadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-
-/* SIDEBAR */
-.sidebar {
-    animation: sidebarIn 0.45s ease-out both;
-}
-
-@keyframes sidebarIn {
-    from {
-        opacity: 0;
-        transform: translateX(-18px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-
-/* PROFILE */
-.profile-section {
-    transition:
-        background 0.25s ease,
-        transform 0.25s ease;
-}
-
-.profile-section:hover {
-    background: #F8FAFC;
-    transform: translateX(2px);
-}
-
-.profile-avatar {
-    transition:
-        transform 0.3s ease,
-        box-shadow 0.3s ease;
-}
-
-.profile-section:hover .profile-avatar {
-    transform: scale(1.06);
-    box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.08);
-}
-
-
-/* NAVIGATION */
-.nav a {
-    transition:
-        background 0.2s ease,
-        color 0.2s ease,
-        transform 0.2s ease,
-        padding-left 0.2s ease;
-}
-
-.nav a:hover {
-    transform: translateX(4px);
-    padding-left: 16px;
-}
-
-.nav a.active {
-    box-shadow: inset 3px 0 0 var(--blue);
-}
-
-
-/* TOPBAR */
-.topbar {
-    animation: topbarIn 0.5s ease-out both;
-}
-
-@keyframes topbarIn {
-    from {
-        opacity: 0;
-        transform: translateY(-8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-
-/* LIVE STATUS */
-.live-dot,
-.status-dot {
-    animation: livePulse 1.8s ease-in-out infinite;
-}
-
-@keyframes livePulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.35);
-    }
-
-    70% {
-        box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
-    }
-
-    100% {
-        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
-    }
-}
-
-
-/* CONTENT */
-.content {
-    animation: contentIn 0.55s ease-out both;
-}
-
-@keyframes contentIn {
-    from {
-        opacity: 0;
-        transform: translateY(12px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-
-/* PAGE HEADER */
-.page-header {
-    animation: headerIn 0.55s ease-out both;
-}
-
-@keyframes headerIn {
-    from {
-        opacity: 0;
-        transform: translateY(8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-
-/* LOG SUMMARY CARDS */
-.stat-card,
-.summary-card {
-    opacity: 0;
-    animation: cardIn 0.55s ease-out forwards;
-
-    transition:
-        transform 0.25s ease,
-        box-shadow 0.25s ease,
-        border-color 0.25s ease;
-}
-
-.stat-card:nth-child(1),
-.summary-card:nth-child(1) {
-    animation-delay: 0.08s;
-}
-
-.stat-card:nth-child(2),
-.summary-card:nth-child(2) {
-    animation-delay: 0.16s;
-}
-
-.stat-card:nth-child(3),
-.summary-card:nth-child(3) {
-    animation-delay: 0.24s;
-}
-
-.stat-card:nth-child(4),
-.summary-card:nth-child(4) {
-    animation-delay: 0.32s;
-}
-
-@keyframes cardIn {
-    from {
-        opacity: 0;
-        transform: translateY(18px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.stat-card:hover,
-.summary-card:hover {
-    transform: translateY(-5px);
-    border-color: #D6E4FF;
-    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.08);
-}
-
-
-/* LOG PANEL */
-.panel {
-    opacity: 0;
-    animation: panelIn 0.55s ease-out forwards;
-
-    transition:
-        transform 0.25s ease,
-        box-shadow 0.25s ease,
-        border-color 0.25s ease;
-}
-
-.panel:nth-child(1) {
-    animation-delay: 0.35s;
-}
-
-.panel:nth-child(2) {
-    animation-delay: 0.45s;
-}
-
-@keyframes panelIn {
-    from {
-        opacity: 0;
-        transform: translateY(14px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.panel:hover {
-    transform: translateY(-2px);
-    border-color: #DDE6F2;
-    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.055);
-}
-
-
-/* LOG TABLE */
-.log-table {
-    animation: tableReveal 0.7s ease-out 0.45s both;
-}
-
-@keyframes tableReveal {
-    from {
-        opacity: 0;
-        transform: translateY(8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-
-/* LOG ROWS */
-.log-table tbody tr {
-    animation: logRowIn 0.35s ease-out both;
-
-    transition:
-        background 0.2s ease,
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
-}
-
-@keyframes logRowIn {
-    from {
-        opacity: 0;
-        transform: translateX(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-.log-table tbody tr:hover {
-    background: #F4F7FB;
-    transform: translateX(3px);
-}
-
-
-/* LOG TIMESTAMP */
-.timestamp {
-    transition:
-        color 0.2s ease,
-        transform 0.2s ease;
-}
-
-.log-table tbody tr:hover .timestamp {
-    color: var(--blue);
-    transform: translateX(2px);
-}
-
-
-/* LOG TYPE / EVENT */
-.log-type,
-.event-type {
-    transition:
-        transform 0.2s ease,
-        color 0.2s ease;
-}
-
-.log-table tbody tr:hover .log-type,
-.log-table tbody tr:hover .event-type {
-    transform: translateX(2px);
-}
-
-
-/* STATUS BADGES */
-.status,
-.log-status {
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
-}
-
-.status:hover,
-.log-status:hover {
-    transform: scale(1.05);
-}
-
-
-/* ATTACK LOGS */
-.status.attack,
-.log-status.attack,
-.event-attack {
-    animation: attackPulse 2s ease-in-out infinite;
-}
-
-@keyframes attackPulse {
-    0%,
-    100% {
-        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
-    }
-
-    50% {
-        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.08);
-    }
-}
-
-
-/* NORMAL LOGS */
-.status.normal,
-.log-status.normal,
-.event-normal {
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
-}
-
-.status.normal:hover,
-.log-status.normal:hover,
-.event-normal:hover {
-    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.07);
-}
-
-
-/* UNRESOLVED */
-.status.unresolved,
-.log-status.unresolved {
-    animation: unresolvedPulse 2s ease-in-out infinite;
-}
-
-@keyframes unresolvedPulse {
-    0%,
-    100% {
-        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
-    }
-
-    50% {
-        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.07);
-    }
-}
-
-
-/* FILTERS */
-input,
-select {
-    transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease,
-        transform 0.2s ease;
-}
-
-input:hover,
-select:hover {
-    border-color: #CBD5E1;
-}
-
-input:focus,
-select:focus {
-    outline: none;
-    border-color: var(--blue);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
-}
-
-
-/* SEARCH */
-.search-box {
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
-}
-
-.search-box:focus-within {
-    transform: translateY(-1px);
-    box-shadow: 0 5px 14px rgba(37, 99, 235, 0.06);
-}
-
-
-/* BUTTONS */
-button,
-.action-btn,
-.refresh-btn,
-.export-btn {
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease,
-        background 0.2s ease;
-}
-
-button:hover,
-.action-btn:hover,
-.refresh-btn:hover,
-.export-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 7px 16px rgba(37, 99, 235, 0.12);
-}
-
-button:active,
-.action-btn:active,
-.refresh-btn:active,
-.export-btn:active {
-    transform: scale(0.97);
-}
-
-
-/* REFRESH */
-.refresh-btn:hover {
-    transform: translateY(-2px) rotate(1deg);
-}
-
-
-/* EMPTY STATE */
-.empty-state {
-    animation: emptyStateIn 0.5s ease-out both;
-}
-
-@keyframes emptyStateIn {
-    from {
-        opacity: 0;
-        transform: translateY(8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-
-/* LOADING */
-.loading {
-    animation: loadingFade 0.8s ease-in-out infinite alternate;
-}
-
-@keyframes loadingFade {
-    from {
-        opacity: 0.45;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
-
-/* PAGINATION */
-.pagination button {
-    transition:
-        transform 0.2s ease,
-        background 0.2s ease,
-        color 0.2s ease;
-}
-
-.pagination button:hover {
-    transform: translateY(-2px);
-}
-
-
-/* SYSTEM CARD */
-.system-card {
-    transition:
-        transform 0.25s ease,
-        border-color 0.25s ease,
-        box-shadow 0.25s ease;
-}
-
-.system-card:hover {
-    transform: translateY(-2px);
-    border-color: #D6E4FF;
-    box-shadow: 0 5px 15px rgba(37, 99, 235, 0.06);
-}
-
-
-/* LOGOUT */
-.logout-button {
-    transition:
-        background 0.2s ease,
-        color 0.2s ease,
-        transform 0.2s ease;
-}
-
-.logout-button:hover {
-    transform: translateX(3px);
-}
-
-
-/* SCROLLBAR */
-::-webkit-scrollbar {
-    width: 6px;
-}
-
-::-webkit-scrollbar-track {
-    background: #F7F9FC;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #CBD5E1;
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #94A3B8;
-}
-
-
-/* REDUCE MOTION */
-@media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
-}
 .panel {
 
     background:
@@ -2072,6 +1527,280 @@ tbody tr:hover {
 
 
 /* =================================
+   LOGS PAGE ANIMATIONS
+================================= */
+
+body {
+    animation: pageFadeIn 0.45s ease-out both;
+}
+
+
+@keyframes pageFadeIn {
+
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+
+}
+
+
+.sidebar {
+    animation: sidebarIn 0.45s ease-out both;
+}
+
+
+@keyframes sidebarIn {
+
+    from {
+        opacity: 0;
+        transform: translateX(-18px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+}
+
+
+.profile-section {
+    transition:
+        background 0.25s ease,
+        transform 0.25s ease;
+}
+
+
+.profile-section:hover {
+    background: #F8FAFC;
+    transform: translateX(2px);
+}
+
+
+.profile-avatar {
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+
+.profile-section:hover .profile-avatar {
+    transform: scale(1.06);
+    box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.08);
+}
+
+
+.nav a {
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease,
+        padding-left 0.2s ease;
+}
+
+
+.nav a:hover {
+    transform: translateX(4px);
+    padding-left: 16px;
+}
+
+
+.nav a.active {
+    box-shadow: inset 3px 0 0 var(--blue);
+}
+
+
+.topbar {
+    animation: topbarIn 0.5s ease-out both;
+}
+
+
+@keyframes topbarIn {
+
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+
+.live-dot,
+.status-dot {
+    animation: livePulse 1.8s ease-in-out infinite;
+}
+
+
+.content {
+    animation: contentIn 0.55s ease-out both;
+}
+
+
+@keyframes contentIn {
+
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+
+.page-header {
+    animation: headerIn 0.55s ease-out both;
+}
+
+
+@keyframes headerIn {
+
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+
+.panel {
+    animation: panelIn 0.55s ease-out forwards;
+}
+
+
+@keyframes panelIn {
+
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+
+.panel:hover {
+    transform: translateY(-2px);
+    border-color: #DDE6F2;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.055);
+}
+
+
+.log-table tbody tr {
+    animation: logRowIn 0.35s ease-out both;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+@keyframes logRowIn {
+
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+}
+
+
+.log-table tbody tr:hover {
+    background: #F4F7FB;
+    transform: translateX(3px);
+}
+
+
+input,
+select {
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+}
+
+
+button,
+.action-btn,
+.refresh-btn,
+.export-btn {
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+
+button:hover,
+.action-btn:hover,
+.refresh-btn:hover,
+.export-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 16px rgba(37, 99, 235, 0.12);
+}
+
+
+button:active,
+.action-btn:active,
+.refresh-btn:active,
+.export-btn:active {
+    transform: scale(0.97);
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+
+        animation-duration: 0.01ms !important;
+
+        animation-iteration-count: 1 !important;
+
+        transition-duration: 0.01ms !important;
+
+    }
+
+}
+
+
+/* =================================
    RESPONSIVE
 ================================= */
 
@@ -2203,7 +1932,6 @@ tbody tr:hover {
 
 }
 
-
 </style>
 
 </head>
@@ -2256,31 +1984,25 @@ tbody tr:hover {
 
         <nav class="nav">
 
-
             <a href="/">
                 Dashboard
             </a>
-
 
             <a href="/traffic">
                 Traffic Monitor
             </a>
 
-
             <a href="/alerts">
                 Alerts
             </a>
-
 
             <a href="/analysis">
                 Analysis
             </a>
 
-
             <a href="/reports">
                 Reports
             </a>
-
 
             <a
                 href="/logs"
@@ -2288,7 +2010,6 @@ tbody tr:hover {
             >
                 Logs
             </a>
-
 
         </nav>
 
@@ -2303,8 +2024,6 @@ tbody tr:hover {
                 class="logout-button"
             >
 
-                
-
                 <span>
                     Logout
                 </span>
@@ -2313,7 +2032,6 @@ tbody tr:hover {
 
 
             <div class="system-card">
-
 
                 <div class="system-title">
 
@@ -2329,7 +2047,6 @@ tbody tr:hover {
                     All systems operational
 
                 </div>
-
 
             </div>
 
@@ -2359,7 +2076,6 @@ tbody tr:hover {
 
         <header class="topbar">
 
-
             <div class="topbar-title">
 
                 Network Intrusion Detection System
@@ -2369,7 +2085,6 @@ tbody tr:hover {
 
             <div class="top-right">
 
-
                 <div class="topbar-status">
 
                     <span class="live-dot"></span>
@@ -2378,9 +2093,7 @@ tbody tr:hover {
 
                 </div>
 
-
             </div>
-
 
         </header>
 
@@ -2429,7 +2142,6 @@ tbody tr:hover {
 
                 <div class="panel-header">
 
-
                     <div class="panel-title">
 
                         Detection History
@@ -2442,7 +2154,6 @@ tbody tr:hover {
                         Automatically refreshed every 5 seconds
 
                     </div>
-
 
                 </div>
 
@@ -2538,34 +2249,52 @@ tbody tr:hover {
 
 <script>
 
-
 /* =================================
    LOAD LOGS
 ================================= */
 
 async function loadLogs() {
 
-
     const tableBody =
         document.getElementById(
             "logsBody"
         );
 
-
     try {
 
+        console.log("Loading logs...");
+
+
+        /* =================================
+           FETCH API
+        ================================= */
 
         const response =
             await fetch(
-                "/api/logs"
+                "/api/logs",
+                {
+                    method: "GET",
+                    credentials: "same-origin",
+                    cache: "no-store"
+                }
             );
 
 
-        /* =========================
+        console.log(
+            "Logs API status:",
+            response.status
+        );
+
+
+        /* =================================
            AUTHENTICATION
-        ========================= */
+        ================================= */
 
         if (response.status === 401) {
+
+            console.log(
+                "Authentication required"
+            );
 
             window.location.href =
                 "/login";
@@ -2575,29 +2304,97 @@ async function loadLogs() {
         }
 
 
+        /* =================================
+           READ RESPONSE
+        ================================= */
+
+        const responseText =
+            await response.text();
+
+
+        console.log(
+            "Logs API response:",
+            responseText
+        );
+
+
+        /* =================================
+           CHECK RESPONSE
+        ================================= */
+
         if (!response.ok) {
 
             throw new Error(
-                "Failed to load logs"
+                "API returned status " +
+                response.status
             );
 
         }
 
 
-        const logs =
-            await response.json();
+        /* =================================
+           PARSE JSON
+        ================================= */
+
+        let logs;
+
+        try {
+
+            logs =
+                JSON.parse(
+                    responseText
+                );
+
+        }
+
+        catch (jsonError) {
+
+            console.error(
+                "JSON parsing failed:",
+                jsonError
+            );
+
+            throw new Error(
+                "Invalid JSON returned by /api/logs"
+            );
+
+        }
 
 
+        console.log(
+            "Logs received:",
+            logs
+        );
 
-        /* =========================
+
+        console.log(
+            "Number of logs:",
+            Array.isArray(logs)
+                ? logs.length
+                : "NOT AN ARRAY"
+        );
+
+
+        /* =================================
+           VALIDATE ARRAY
+        ================================= */
+
+        if (!Array.isArray(logs)) {
+
+            throw new Error(
+                "API response is not an array"
+            );
+
+        }
+
+
+        /* =================================
            EMPTY
-        ========================= */
+        ================================= */
 
         if (
-            !logs ||
             logs.length === 0
         ) {
-
 
             tableBody.innerHTML = `
 
@@ -2629,23 +2426,20 @@ async function loadLogs() {
         }
 
 
+        /* =================================
+           CLEAR TABLE ONLY AFTER
+           SUCCESSFUL API RESPONSE
+        ================================= */
 
-        /* =========================
-           CLEAR TABLE
-        ========================= */
-
-        tableBody.innerHTML =
-            "";
-
+        tableBody.innerHTML = "";
 
 
-        /* =========================
+        /* =================================
            RENDER LOGS
-        ========================= */
+        ================================= */
 
         logs.forEach(
             (log, index) => {
-
 
                 const row =
                     document.createElement(
@@ -2658,26 +2452,27 @@ async function loadLogs() {
 
 
                 row.style.animationDelay =
-                    `${Math.min(index * 0.025, 0.4)}s`;
+                    `${Math.min(
+                        index * 0.025,
+                        0.4
+                    )}s`;
 
 
-
-                /* =====================
-                   TIME
-                ===================== */
+                /* =========================
+                   TIMESTAMP
+                ========================= */
 
                 const timestamp =
                     log.timestamp
                         ? new Date(
                             log.timestamp
-                          ).toLocaleString()
+                        ).toLocaleString()
                         : "-";
 
 
-
-                /* =====================
+                /* =========================
                    RESULT
-                ===================== */
+                ========================= */
 
                 const result =
                     log.result ||
@@ -2690,10 +2485,9 @@ async function loadLogs() {
                         : "normal";
 
 
-
-                /* =====================
+                /* =========================
                    SEVERITY
-                ===================== */
+                ========================= */
 
                 const severity =
                     String(
@@ -2733,10 +2527,9 @@ async function loadLogs() {
                 }
 
 
-
-                /* =====================
+                /* =========================
                    STATUS
-                ===================== */
+                ========================= */
 
                 const status =
                     String(
@@ -2753,10 +2546,9 @@ async function loadLogs() {
                         );
 
 
-
-                /* =====================
+                /* =========================
                    PROTOCOL
-                ===================== */
+                ========================= */
 
                 let protocol =
                     log.protocol ||
@@ -2791,10 +2583,9 @@ async function loadLogs() {
                 }
 
 
-
-                /* =====================
-                   HIGH ALERT CLASS
-                ===================== */
+                /* =========================
+                   HIGH ALERT
+                ========================= */
 
                 const highAlertClass =
                     severity === "high"
@@ -2802,10 +2593,9 @@ async function loadLogs() {
                         : "";
 
 
-
-                /* =====================
-                   ROW HTML
-                ===================== */
+                /* =========================
+                   CREATE ROW
+                ========================= */
 
                 row.innerHTML = `
 
@@ -2813,36 +2603,29 @@ async function loadLogs() {
                         ${timestamp}
                     </td>
 
-
                     <td>
                         ${log.source_ip || "-"}
                     </td>
-
 
                     <td>
                         ${log.source_port || "-"}
                     </td>
 
-
                     <td>
                         ${log.destination_ip || "-"}
                     </td>
-
 
                     <td>
                         ${log.destination_port || "-"}
                     </td>
 
-
                     <td>
                         ${protocol}
                     </td>
 
-
                     <td>
                         ${log.packet_count || 0}
                     </td>
-
 
                     <td>
                         ${Number(
@@ -2850,21 +2633,17 @@ async function loadLogs() {
                         ).toFixed(2)}
                     </td>
 
-
                     <td>
                         ${log.total_bytes || 0}
                     </td>
-
 
                     <td class="${resultClass}">
                         ${result}
                     </td>
 
-
                     <td>
                         ${log.attack_type || "-"}
                     </td>
-
 
                     <td>
                         ${Number(
@@ -2872,20 +2651,17 @@ async function loadLogs() {
                         ).toFixed(2)}%
                     </td>
 
-
                     <td>
                         ${Number(
                             log.risk_score || 0
                         ).toFixed(2)}
                     </td>
 
-
                     <td
                         class="${severityClass} ${highAlertClass}"
                     >
                         ${log.severity || "-"}
                     </td>
-
 
                     <td class="${statusClass}">
                         ${log.status || "-"}
@@ -2902,10 +2678,9 @@ async function loadLogs() {
         );
 
 
-
-        /* =========================
+        /* =================================
            LAST UPDATED
-        ========================= */
+        ================================= */
 
         document.getElementById(
             "lastUpdated"
@@ -2914,40 +2689,35 @@ async function loadLogs() {
             new Date().toLocaleTimeString();
 
 
-    }
+        console.log(
+            "Logs rendered successfully."
+        );
 
+
+    }
 
     catch (error) {
 
-
         console.error(
-            "Logs error:",
+            "LOGS ERROR:",
             error
         );
 
 
-        tableBody.innerHTML = `
+        /*
+           IMPORTANT:
 
-            <tr>
+           Do NOT clear the existing
+           logs if the refresh fails.
 
-                <td
-                    colspan="15"
-                    class="error"
-                >
-
-                    Failed to load network logs.
-
-                </td>
-
-            </tr>
-
-        `;
-
+           The previous successful
+           data stays visible.
+        */
 
         document.getElementById(
             "lastUpdated"
         ).textContent =
-            "Last updated: failed";
+            "Last updated: refresh failed";
 
     }
 
@@ -2962,7 +2732,7 @@ loadLogs();
 
 
 /* =================================
-   AUTO REFRESH
+   AUTO REFRESH EVERY 5 SECONDS
 ================================= */
 
 setInterval(

@@ -14,7 +14,9 @@ from nids.db import (
     db,
     User,
     Traffic,
-    Alert
+    Alert,
+    Explanation,
+    DetectionRule
 )
 
 from werkzeug.security import (
@@ -50,7 +52,9 @@ app.secret_key = os.getenv(
 # DATABASE CONFIGURATION
 # ========================================
 
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
+    "DATABASE_URL"
+)
 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
@@ -60,6 +64,7 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_size": 5,
     "max_overflow": 2
 }
+
 db.init_app(app)
 
 
@@ -78,9 +83,10 @@ def login_required():
 @app.route("/login", methods=["GET", "POST"])
 def login():
 
-    # Already logged in
     if session.get("logged_in"):
-        return redirect(url_for("dashboard"))
+        return redirect(
+            url_for("dashboard")
+        )
 
     if request.method == "POST":
 
@@ -533,6 +539,7 @@ def reports():
 def api_dashboard():
 
     if not login_required():
+
         return jsonify({
             "error": "Authentication required"
         }), 401
@@ -611,6 +618,7 @@ def api_dashboard():
 def dashboard_trends():
 
     if not login_required():
+
         return jsonify({
             "error": "Authentication required"
         }), 401
@@ -629,6 +637,7 @@ def dashboard_trends():
         traffic_records,
         start=1
     ):
+
         traffic_trend.append(index)
 
     attack_trend = []
@@ -637,6 +646,7 @@ def dashboard_trends():
         alert_records,
         start=1
     ):
+
         attack_trend.append(index)
 
     if not traffic_trend:
@@ -712,6 +722,7 @@ def dashboard_trends():
 def resolve_alert(alert_id):
 
     if not login_required():
+
         return jsonify({
             "error": "Authentication required"
         }), 401
@@ -746,6 +757,93 @@ def resolve_alert(alert_id):
 
 
 # ========================================
+# SHAP EXPLANATION API
+# ========================================
+
+@app.route(
+    "/api/explanations/<int:alert_id>"
+)
+def api_explanations(alert_id):
+
+    # --------------------------------
+    # AUTHENTICATION
+    # --------------------------------
+
+    if not login_required():
+
+        return jsonify({
+            "error": "Authentication required"
+        }), 401
+
+    # --------------------------------
+    # FIND ALERT
+    # --------------------------------
+
+    alert = db.session.get(
+        Alert,
+        alert_id
+    )
+
+    if not alert:
+
+        return jsonify({
+            "error": "Alert not found"
+        }), 404
+
+    # --------------------------------
+    # GET SAVED SHAP EXPLANATIONS
+    # --------------------------------
+
+    explanations = Explanation.query.filter_by(
+        alert_id=alert_id
+    ).order_by(
+        func.abs(
+            Explanation.shap_value
+        ).desc()
+    ).all()
+
+    # --------------------------------
+    # NO EXPLANATIONS FOUND
+    # --------------------------------
+
+    if not explanations:
+
+        return jsonify({
+            "error": (
+                "No SHAP explanations "
+                "found for this alert."
+            ),
+            "alert_id": alert_id,
+            "explanations": []
+        }), 404
+
+    # --------------------------------
+    # CONVERT TO JSON
+    # --------------------------------
+
+    data = []
+
+    for explanation in explanations:
+
+        data.append({
+
+            "feature_name":
+                explanation.feature_name,
+
+            "feature_value":
+                explanation.feature_value,
+
+            "shap_value":
+                explanation.shap_value,
+
+            "contribution":
+                explanation.contribution
+        })
+
+    return jsonify(data)
+
+
+# ========================================
 # RECENT TRAFFIC API
 # ========================================
 
@@ -753,6 +851,7 @@ def resolve_alert(alert_id):
 def api_traffic():
 
     if not login_required():
+
         return jsonify({
             "error": "Authentication required"
         }), 401
@@ -809,6 +908,7 @@ def api_traffic():
 def api_alerts():
 
     if not login_required():
+
         return jsonify({
             "error": "Authentication required"
         }), 401
@@ -871,6 +971,7 @@ def api_alerts():
 def api_logs():
 
     if not login_required():
+
         return jsonify({
             "error": "Authentication required"
         }), 401
@@ -952,10 +1053,15 @@ def api_logs():
         else:
 
             result = "Normal"
+
             attack_type = "-"
+
             confidence = 0
+
             risk_score = 0
+
             severity = "Low"
+
             status = "Normal"
 
         data.append({
@@ -1020,6 +1126,7 @@ def api_logs():
 def api_analysis():
 
     if not login_required():
+
         return jsonify({
             "error": "Authentication required"
         }), 401
@@ -1238,6 +1345,7 @@ def api_analysis():
 def api_reports():
 
     if not login_required():
+
         return jsonify({
             "error": "Authentication required"
         }), 401
@@ -1491,3 +1599,4 @@ if __name__ == "__main__":
     app.run(
         debug=True
     )
+
