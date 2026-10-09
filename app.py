@@ -665,6 +665,18 @@ def agent_heartbeat():
         "message": "Agent connected successfully",
         "device_id": device_id
     })
+
+@app.route("/api/agent/traffic", methods=["POST"])
+def agent_traffic():
+    data = request.get_json(silent=True) or {}
+
+    print("\n[AGENT TRAFFIC] Data received:")
+    print(data)
+
+    return jsonify({
+        "success": True,
+        "message": "Traffic data received successfully"
+    })
 # ========================================
 # MONITORING STATUS
 # ========================================
