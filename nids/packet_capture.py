@@ -22,6 +22,10 @@ from nids.database_logger import save_detection
 PACKETS_PER_CHECK = 10
 
 
+# ========================================
+# GET PACKET CONNECTION INFORMATION
+# ========================================
+
 def get_packet_connection_info(packet):
 
     if not packet.haslayer(IP):
@@ -50,6 +54,10 @@ def get_packet_connection_info(packet):
         destination_port
     )
 
+
+# ========================================
+# PROCESS PACKET
+# ========================================
 
 def process_packet(packet, user_id, app):
 
@@ -82,7 +90,8 @@ def process_packet(packet, user_id, app):
             f"{source_ip}:{source_port} -> "
             f"{destination_ip}:{destination_port} "
             f"| Protocol: {protocol} "
-            f"| Flow packets: {packet_count}"
+            f"| Flow packets: {packet_count}",
+            flush=True
         )
 
 
@@ -90,7 +99,10 @@ def process_packet(packet, user_id, app):
             return
 
 
-        print("\n[DETECTION] Analyzing network flow...")
+        print(
+            "\n[DETECTION] Analyzing network flow...",
+            flush=True
+        )
 
 
         features = get_features_for_flow(flow_key)
@@ -227,9 +239,14 @@ def process_packet(packet, user_id, app):
     except Exception as e:
 
         print(
-            f"\n[ERROR] Packet processing failed: {e}"
+            f"\n[ERROR] Packet processing failed: {e}",
+            flush=True
         )
 
+
+# ========================================
+# START PACKET CAPTURE
+# ========================================
 
 def start_capture(user_id, app):
 
@@ -300,4 +317,83 @@ def start_capture(user_id, app):
 
         print(
             f"\n[ERROR] Packet capture failed: {e}"
+        )
+
+
+# ========================================
+# DIRECT BACKEND TESTING
+# ========================================
+
+if __name__ == "__main__":
+
+    print("\n")
+    print("=" * 60)
+    print("NIDS PACKET CAPTURE - DIRECT TEST")
+    print("=" * 60)
+
+    try:
+
+        # Import app only when this file
+        # is directly executed.
+        #
+        # This does NOT create the circular
+        # import problem during normal Flask use.
+
+        from app import app
+
+        print("\nFlask application loaded successfully.")
+
+        user_id_input = input(
+            "\nEnter user ID to monitor: "
+        ).strip()
+
+        if not user_id_input:
+
+            print(
+                "\n[ERROR] User ID is required."
+            )
+
+            sys.exit(1)
+
+        try:
+
+            user_id = int(
+                user_id_input
+            )
+
+        except ValueError:
+
+            print(
+                "\n[ERROR] User ID must be an integer."
+            )
+
+            sys.exit(1)
+
+
+        print(
+            f"\nStarting capture for user ID: {user_id}"
+        )
+
+
+        start_capture(
+            user_id,
+            app
+        )
+
+
+    except KeyboardInterrupt:
+
+        print(
+            "\n\nPacket capture stopped."
+        )
+
+
+    except Exception as e:
+
+        print(
+            "\n[ERROR] Could not start packet capture:"
+        )
+
+        print(
+            f"{type(e).__name__}: {e}"
         )

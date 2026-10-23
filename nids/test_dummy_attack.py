@@ -1,6 +1,7 @@
+
 import sys
 from pathlib import Path
-
+from getpass import getpass
 
 # ============================================================
 # PROJECT ROOT
@@ -20,6 +21,8 @@ import pandas as pd
 
 from nids.detector import detect
 from nids.database_logger import save_detection
+from app import app
+from nids.db import User
 
 
 # ============================================================
@@ -48,19 +51,9 @@ print("=" * 60)
 # ============================================================
 
 if not DUMMY_FILE.exists():
-
-    print(
-        "\n[ERROR] Dummy attack file not found."
-    )
-
-    print(
-        "\nRun this first:"
-    )
-
-    print(
-        "python nids\\create_dummy_attack.py"
-    )
-
+    print("\n[ERROR] Dummy attack file not found.")
+    print("\nRun this first:")
+    print("python nids\\create_dummy_attack.py")
     sys.exit(1)
 
 
@@ -68,49 +61,27 @@ if not DUMMY_FILE.exists():
 # LOAD FILE
 # ============================================================
 
-print(
-    "\nLoading dummy malicious traffic..."
-)
+print("\nLoading dummy malicious traffic...")
 
-df = pd.read_csv(
-    DUMMY_FILE
-)
+df = pd.read_csv(DUMMY_FILE)
 
 if df.empty:
-
-    print(
-        "\n[ERROR] Dummy file is empty."
-    )
-
+    print("\n[ERROR] Dummy file is empty.")
     sys.exit(1)
-
 
 row = df.iloc[0]
 
-print(
-    "Dummy attack loaded successfully."
-)
+print("Dummy attack loaded successfully.")
 
 
 # ============================================================
 # SEPARATE NETWORK INFORMATION
 # ============================================================
 
-source_ip = str(
-    row["source_ip"]
-)
-
-destination_ip = str(
-    row["destination_ip"]
-)
-
-source_port = int(
-    row["source_port"]
-)
-
-protocol = str(
-    row["protocol"]
-)
+source_ip = str(row["source_ip"])
+destination_ip = str(row["destination_ip"])
+source_port = int(row["source_port"])
+protocol = str(row["protocol"])
 
 
 # ============================================================
@@ -127,18 +98,14 @@ metadata_columns = [
 features = {}
 
 for column in df.columns:
-
     if column in metadata_columns:
         continue
 
     value = row[column]
 
     try:
-
         value = float(value)
-
     except (ValueError, TypeError):
-
         value = 0.0
 
     features[column] = value
@@ -153,22 +120,10 @@ print("=" * 60)
 print("DUMMY MALICIOUS TRAFFIC")
 print("=" * 60)
 
-print(
-    f"\nSource IP       : {source_ip}"
-)
-
-print(
-    f"Source Port     : {source_port}"
-)
-
-print(
-    f"Destination IP  : {destination_ip}"
-)
-
-print(
-    f"Protocol        : {protocol}"
-)
-
+print(f"\nSource IP       : {source_ip}")
+print(f"Source Port     : {source_port}")
+print(f"Destination IP  : {destination_ip}")
+print(f"Protocol        : {protocol}")
 print(
     f"Destination Port: "
     f"{int(features.get('Destination Port', 0))}"
@@ -184,26 +139,13 @@ print("=" * 60)
 print("RUNNING NIDS DETECTOR")
 print("=" * 60)
 
-
 try:
-
-    result = detect(
-        features
-    )
+    result = detect(features)
 
 except Exception as e:
-
-    print(
-        "\n[DETECTION ERROR]"
-    )
-
+    print("\n[DETECTION ERROR]")
     print(e)
-
-    print(
-        f"\nError type: "
-        f"{type(e).__name__}"
-    )
-
+    print(f"\nError type: {type(e).__name__}")
     sys.exit(1)
 
 
@@ -216,46 +158,17 @@ print("=" * 60)
 print("NIDS DETECTION RESULT")
 print("=" * 60)
 
+print(f"\nSource      : {source_ip}:{source_port}")
 print(
-    f"\nSource      : "
-    f"{source_ip}:{source_port}"
-)
-
-print(
-    f"Destination : "
-    f"{destination_ip}:"
+    f"Destination : {destination_ip}:"
     f"{int(features.get('Destination Port', 0))}"
 )
-
-print(
-    f"Protocol    : {protocol}"
-)
-
-print(
-    f"\nPrediction  : "
-    f"{result['prediction']}"
-)
-
-print(
-    f"Normal Prob : "
-    f"{result['normal_probability']}%"
-)
-
-print(
-    f"Attack Prob : "
-    f"{result['attack_probability']}%"
-)
-
-print(
-    f"Risk Score  : "
-    f"{result['risk_score']}"
-)
-
-print(
-    f"Severity    : "
-    f"{result['severity']}"
-)
-
+print(f"Protocol    : {protocol}")
+print(f"\nPrediction  : {result['prediction']}")
+print(f"Normal Prob : {result['normal_probability']}%")
+print(f"Attack Prob : {result['attack_probability']}%")
+print(f"Risk Score  : {result['risk_score']}")
+print(f"Severity    : {result['severity']}")
 print("=" * 60)
 
 
@@ -263,86 +176,88 @@ print("=" * 60)
 # DATABASE VALUES
 # ============================================================
 
-flow_duration = features.get(
-    "Flow Duration",
-    0
-)
+flow_duration = features.get("Flow Duration", 0)
 
 total_fwd = features.get(
-    "Total Length of Fwd Packets",
-    0
+    "Total Length of Fwd Packets", 0
 )
 
 total_bwd = features.get(
-    "Total Length of Bwd Packets",
-    0
+    "Total Length of Bwd Packets", 0
 )
 
-total_bytes = int(
-    total_fwd + total_bwd
-)
+total_bytes = int(total_fwd + total_bwd)
 
 packet_count = int(
-    features.get(
-        "Total Fwd Packets",
-        10
-    )
+    features.get("Total Fwd Packets", 10)
 )
 
 
 # ============================================================
-# SAVE TO DATABASE
+# FIND REGISTERED USER AND SAVE
 # ============================================================
 
-print(
-    "\nSaving detection to Neon PostgreSQL..."
-)
+print("\n")
+print("=" * 60)
+print("SAVING DETECTION TO NEON POSTGRESQL")
+print("=" * 60)
 
+# Enter the username you normally use to log in to NIDS.
+TEST_USERNAME = input(
+    "\nEnter your registered NIDS username: "
+).strip()
+
+if not TEST_USERNAME:
+    print("\n[ERROR] Username cannot be empty.")
+    sys.exit(1)
 
 try:
+    with app.app_context():
 
-    save_detection(
+        test_user = User.query.filter_by(
+            username=TEST_USERNAME
+        ).first()
 
-        source_ip=source_ip,
-
-        destination_ip=destination_ip,
-
-        source_port=source_port,
-
-        destination_port=int(
-            features.get(
-                "Destination Port",
-                0
+        if test_user is None:
+            print(
+                f"\n[ERROR] User '{TEST_USERNAME}' "
+                "was not found in the configured database."
             )
-        ),
+            print(
+                "Check your username and DATABASE_URL."
+            )
+            sys.exit(1)
 
-        protocol=protocol,
+        print(
+            f"\nUser found: {test_user.username}"
+        )
 
-        packet_count=packet_count,
+        save_detection(
+            source_ip=source_ip,
+            destination_ip=destination_ip,
+            source_port=source_port,
+            destination_port=int(
+                features.get("Destination Port", 0)
+            ),
+            protocol=protocol,
+            packet_count=packet_count,
+            flow_duration=float(flow_duration),
+            total_bytes=total_bytes,
+            result=result,
+            user_id=test_user.id,
+            app=app
+        )
 
-        flow_duration=float(
-            flow_duration
-        ),
-
-        total_bytes=total_bytes,
-
-        result=result
-    )
-
+        print("\nSave function completed.")
+        print(
+            "Check the database logger output above "
+            "to confirm the transaction was committed."
+        )
 
 except Exception as e:
-
-    print(
-        "\n[DATABASE ERROR]"
-    )
-
+    print("\n[DATABASE ERROR]")
     print(e)
-
-    print(
-        f"\nError type: "
-        f"{type(e).__name__}"
-    )
-
+    print(f"\nError type: {type(e).__name__}")
     sys.exit(1)
 
 
@@ -354,50 +269,18 @@ print("\n")
 print("=" * 60)
 
 if result["prediction"] == "Attack":
-
-    print(
-        "✓ ATTACK SUCCESSFULLY DETECTED"
-    )
-
-    print(
-        "\nDummy malicious traffic "
-        "was detected by XGBoost."
-    )
-
-    print(
-        "\nDetection saved to "
-        "Neon PostgreSQL."
-    )
-
-    print(
-        "\nCheck your website:"
-    )
-
-    print(
-        "1. Dashboard"
-    )
-
-    print(
-        "2. Alerts"
-    )
-
-    print(
-        "3. SHAP Explanation"
-    )
-
-    print(
-        "4. Logs"
-    )
-
+    print("✓ ATTACK CLASSIFIED BY THE MODEL")
+    print("\nDummy traffic was classified as an attack.")
+    print("\nCheck your website:")
+    print("1. Dashboard")
+    print("2. Alerts")
+    print("3. SHAP Explanation")
+    print("4. Logs")
 else:
-
+    print("⚠ TRAFFIC CLASSIFIED AS NORMAL")
     print(
-        "⚠ TRAFFIC CLASSIFIED AS NORMAL"
-    )
-
-    print(
-        "\nThe selected attack sample "
-        "was classified as normal."
+        "\nThe selected dummy sample was classified "
+        "as normal."
     )
 
 print("=" * 60)
